@@ -1,7 +1,11 @@
 
 import exceptions.AllreadyAddedVersionException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author julien
@@ -25,21 +29,29 @@ public class Modules {
         Module mod3_1 = loadModule("module3-1.0-SNAPSHOT");
 
         setDependenciesGlobal();
-        displayDependencies();
+     //   displayDependencies();
 
         mod2_1.run();
     }
 
     private void displayDependencies() {
+        System.out.println("--- Dependencies ---");
         for (Map.Entry pairs : listModules.entrySet()) {
             Module mod = (Module) pairs.getValue();
+            System.out.println(mod + " -> " + mod.getDependenciesNames());
         }
     }
 
     private Module loadModule(String fileName) {
-        Module mod = new Module(path + fileName);
-        addToMap(mod);
-        return mod;
+        try {
+            Module mod = new Module( new URL("file://" + path + fileName) );
+            addToMap(mod);
+            return mod;
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(Modules.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return null;
     }
 
     private void setDependencesLocal(Module mod) {

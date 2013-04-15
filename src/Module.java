@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,7 +19,7 @@ import org.json.simple.parser.ParseException;
  * @author julien
  */
 
-class Module {
+class Module extends URLClassLoader {
 
     private String name;
     private String version;
@@ -27,7 +29,10 @@ class Module {
     private File jarFile;
     private File modFile;
 
-    public Module(String modulePath) {
+    public Module(URL url) {
+        super(new URL[] { url });
+        String modulePath = url.getPath();
+        
         this.dependences = new HashMap<String, Module>();
         
         loadFiles(modulePath); 
