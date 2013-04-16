@@ -15,26 +15,33 @@ import org.json.simple.parser.ParseException;
 
 /**
  * @author julien
+ * 
+ * Utilisation en full programatic :
+ *      Modules modules = new Modules("/Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/", "module2-1.0-SNAPSHOT", "module1-2.0-SNAPSHOT", "module1-1.0-SNAPSHOT", "module3-1.0-SNAPSHOT");
+ *
  */
 public class Modules {
 
     public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException {
-        Modules modules = new Modules("/Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/");
+        Modules modules = new Modules("/Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/", "module2-1.0-SNAPSHOT", "module1-2.0-SNAPSHOT", "module1-1.0-SNAPSHOT", "module3-1.0-SNAPSHOT");
     }
     
     private String path;
     private Map<String, Module> listModules;
     //      Name:Version
 
-    public Modules(String path) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException {
+    public Modules(String path, String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException {
         this.listModules = new HashMap<String, Module>();
         this.path = path;
         String[] args = {};
 
-        loadModule("module2-1.0-SNAPSHOT");
+        for (String module : modulesToLoad)
+            loadModule( module );
+        
+        /*loadModule("module2-1.0-SNAPSHOT");
         loadModule("module1-2.0-SNAPSHOT");
         loadModule("module1-1.0-SNAPSHOT");
-        loadModule("module3-1.0-SNAPSHOT");
+        loadModule("module3-1.0-SNAPSHOT");*/
 
         setDependenciesGlobal();
         displayDependencies();
