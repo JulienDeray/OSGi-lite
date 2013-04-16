@@ -27,6 +27,7 @@ public class Modules {
     public Modules(String path) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
         this.listModules = new HashMap<String, Module>();
         this.path = path;
+        String[] args = {};
 
         loadModule("module2-1.0-SNAPSHOT");
         loadModule("module1-2.0-SNAPSHOT");
@@ -39,7 +40,6 @@ public class Modules {
         Module mainModule = findMainModule();
         String mainClassName = mainModule.getMainClass();
         
-        String[] args = {};
         mainModule.invokeClass( mainClassName, args );
     }
 
@@ -49,6 +49,7 @@ public class Modules {
             Module mod = (Module) pairs.getValue();
             System.out.println(mod + " -> " + mod.getDependenciesNames());
         }
+        System.out.println("\n");
     }
 
     private Module loadModule(String fileName) throws IOException {

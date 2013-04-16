@@ -14,6 +14,9 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -119,7 +122,6 @@ class Module extends URLClassLoader {
     
     public void invokeClass(String name, String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
         Class c = loadClass(name);
-        System.out.println( c.getName() );
         Method m = c.getMethod("main", new Class[]{args.getClass()});
         m.setAccessible(true);
         int mods = m.getModifiers();
@@ -130,6 +132,75 @@ class Module extends URLClassLoader {
             m.invoke(null, new Object[]{args});
         } catch (IllegalAccessException e) {
         }
+    }
+    
+    @Override
+    public Class loadClass( String name ) throws ClassNotFoundException {
+        try {            
+            if ( findLoadedClass( name ) != null )
+                return findLoadedClass( name );
+            
+            else if ( isJDKClass( name ) )
+                return this.getClass().getClassLoader().loadClass( name );
+
+            else if ( isInCurrentModule( name ) )
+                return super.loadClass( name );
+            
+            else if ( canLoad( name ) )
+                return loadFromDep( name );
+            
+            else
+                throw new Exception();
+
+        } catch (Exception ex) {
+                Logger.getLogger(Module.class.getName()).log(Level.SEVERE, "Unknown class : " + name + " exec in " + this.toString(), ex);
+                return null;
+        }
+    }
+    
+    private Class loadFromDep( String name ) throws ClassNotFoundException {
+        for ( Module mod : dependences.values() ) {
+            if ( mod.canLoad( name ) )
+                return mod.loadClass( name );
+        }
+        return null;
+    }
+    
+    public boolean canLoad( String name ) throws ClassNotFoundException {
+        if ( isInCurrentModule( name ) )
+            return true;
+        else
+            for ( Module mod : dependences.values() ) {
+                if ( mod.canLoad( name ) )
+                    return true;
+            }
+        return false;
+    }
+    
+    private boolean isInCurrentModule( String name ) throws ClassNotFoundException {
+        Class clazz;
+
+        try {
+            clazz = super.loadClass(name);
+        } catch ( ClassNotFoundException e ) {
+            return false;
+        } 
+        
+        if ( clazz != null )    // Don't know if it is necessary
+            return true;
+        else return false;
+    }
+    
+    private boolean isJDKClass( String name ) {
+        if ( name.startsWith( "java." )
+            || name.startsWith( "javax." )
+            || name.startsWith( "sun." )
+            || name.startsWith( "sunw." )
+            || name.startsWith( "com.sun." )
+            || name.startsWith( "org.w3c.dom" ) )
+            return true;
+        else
+            return false;
     }
     
     /*
