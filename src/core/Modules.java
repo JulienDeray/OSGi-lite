@@ -2,6 +2,7 @@ package core;
 
 
 import exceptions.AllreadyAddedVersionException;
+import exceptions.BadArgumentsException;
 import exceptions.DependenceNotFoundException;
 import exceptions.InvalidModException;
 import exceptions.NoMainModuleException;
@@ -19,11 +20,21 @@ import org.json.simple.parser.ParseException;
  * Utilisation en full programatic :
  *      Modules modules = new Modules("/Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/", "module2-1.0-SNAPSHOT", "module1-2.0-SNAPSHOT", "module1-1.0-SNAPSHOT", "module3-1.0-SNAPSHOT");
  *
+ * Utilisation en ligne de commande :
+ *      java -jar modules.jar -mp /Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/ module2-1.0-SNAPSHOT module1-2.0-SNAPSHOT module1-1.0-SNAPSHOT module3-1.0-SNAPSHOT
  */
 public class Modules {
 
-    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException {
-        Modules modules = new Modules("/Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/", "module2-1.0-SNAPSHOT", "module1-2.0-SNAPSHOT", "module1-1.0-SNAPSHOT", "module3-1.0-SNAPSHOT");
+    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException, BadArgumentsException {
+        
+        if ( !args[0].equals( "-mp" ) )
+            throw new BadArgumentsException();
+        
+        String[] modulesPaths = new String[ args.length - 2 ];
+        for (int i = 2; i < args.length; i++)
+            modulesPaths[i-2] = args[i];
+        
+        Modules modules = new Modules(args[1], modulesPaths);
     }
     
     private String path;
@@ -37,11 +48,6 @@ public class Modules {
 
         for (String module : modulesToLoad)
             loadModule( module );
-        
-        /*loadModule("module2-1.0-SNAPSHOT");
-        loadModule("module1-2.0-SNAPSHOT");
-        loadModule("module1-1.0-SNAPSHOT");
-        loadModule("module3-1.0-SNAPSHOT");*/
 
         setDependenciesGlobal();
         displayDependencies();
