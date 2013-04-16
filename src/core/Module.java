@@ -138,7 +138,7 @@ class Module extends URLClassLoader {
             if ( mod.canLoad( name ) )
                 return mod.loadClass( name );
         }
-        return null;
+        throw new ClassNotFoundException();
     }
     
     public boolean canLoad( String name ) throws ClassNotFoundException {

@@ -4,14 +4,13 @@ package core;
 import exceptions.AllreadyAddedVersionException;
 import exceptions.DependenceNotFoundException;
 import exceptions.InvalidModException;
+import exceptions.NoMainModuleException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.parser.ParseException;
 
 /**
@@ -19,7 +18,7 @@ import org.json.simple.parser.ParseException;
  */
 public class Modules {
 
-    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException {
+    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException {
         Modules modules = new Modules("/Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/");
     }
     
@@ -27,7 +26,7 @@ public class Modules {
     private Map<String, Module> listModules;
     //      Name:Version
 
-    public Modules(String path) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException {
+    public Modules(String path) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException {
         this.listModules = new HashMap<String, Module>();
         this.path = path;
         String[] args = {};
@@ -93,14 +92,13 @@ public class Modules {
             listModules.put(formatKey(mod), mod);
     }
 
-    // TODO : Ne détecte pas s'il y a deux "main module"
-    private Module findMainModule() {
+    private Module findMainModule() throws NoMainModuleException {
+        
         for ( Module mod : listModules.values() ) {
             if ( mod.getMainClass() != null ) 
                 return mod;
         }
-        
-        return null;
+        throw new NoMainModuleException();
     }
 
 }
