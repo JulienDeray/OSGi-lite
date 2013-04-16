@@ -40,7 +40,7 @@ class Module extends URLClassLoader {
         this.dependences = new HashMap<String, Module>();
         
         loadFiles(modulePath); 
-        scanModFile(modulePath);
+        scanModFile();
     }
 
     private void loadFiles(String modulePath) {
@@ -54,7 +54,7 @@ class Module extends URLClassLoader {
         }
     }
 
-    private void scanModFile(String modulePath) throws IOException, ParseException, InvalidModException {
+    private void scanModFile() throws IOException, ParseException, InvalidModException {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(new FileReader( modFile ));
         JSONObject jsonObject = (JSONObject) obj;
