@@ -3,7 +3,6 @@ package core;
 
 import exceptions.InvalidModException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -14,9 +13,6 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -37,7 +33,7 @@ class Module extends URLClassLoader {
     private File jarFile;
     private File modFile;
 
-    public Module(URL url) throws IOException {
+    public Module(URL url) throws IOException, ParseException, InvalidModException {
         super(new URL[] { url });
         String modulePath = url.getPath().substring(5, url.getPath().length() - 6);
         
@@ -57,52 +53,35 @@ class Module extends URLClassLoader {
             System.err.println("Le module " + modulePath + " n'existe pas.");
         }
     }
-    
-    private String nullPrevent(String att) {
-        
-        try {
-            if (!"null".equals(att))
-                return att;
-            else
-                throw new InvalidModException();
-        }
-        catch(Exception e) {
-            System.err.println("Invalid .mod");
-        }
-        return null;
-    }
 
-    private void scanModFile(String modulePath) {
+    private void scanModFile(String modulePath) throws IOException, ParseException, InvalidModException {
         JSONParser parser = new JSONParser();
- 
-        try {
-            Object obj = parser.parse(new FileReader( modFile ));
+        Object obj = parser.parse(new FileReader( modFile ));
+        JSONObject jsonObject = (JSONObject) obj;
 
-            JSONObject jsonObject = (JSONObject) obj;
+        // String fields
+        this.name = nullPrevent( (String) jsonObject.get("name") );
+        this.version = nullPrevent( (String) jsonObject.get("version") );
+        this.mainClass = (String) jsonObject.get("mainClass");
 
-            // String fields
-            this.name = nullPrevent( (String) jsonObject.get("name") );
-            this.version = nullPrevent( (String) jsonObject.get("version") );
-            this.mainClass = (String) jsonObject.get("mainClass");
+        // Dependencies
+        JSONArray dependenciesJson = (JSONArray) jsonObject.get("dependencies");
+        Iterator<String> iterator = dependenciesJson.iterator();
+        while (iterator.hasNext()) {
+            String nameAndVersion = iterator.next();
+            String name = nameAndVersion.substring(0, nameAndVersion.indexOf(":"));
+            String version = nameAndVersion.substring(nameAndVersion.indexOf(":") + 1, nameAndVersion.length());
 
-            // Dependencies
-            JSONArray dependenciesJson = (JSONArray) jsonObject.get("dependencies");
-            Iterator<String> iterator = dependenciesJson.iterator();
-            while (iterator.hasNext()) {
-                String nameAndVersion = iterator.next();
-                String name = nameAndVersion.substring(0, nameAndVersion.indexOf(":"));
-                String version = nameAndVersion.substring(nameAndVersion.indexOf(":") + 1, nameAndVersion.length());
-                
-                this.dependences.put(name + ":" + version, null);
-            }
- 
-        } catch (FileNotFoundException e) {
-            System.err.println("Le module " + modulePath + " n'existe pas.");
-        } catch (IOException e) {
-            System.err.println("Le module " + modulePath + " n'existe pas.");
-        } catch (ParseException e) {
-            System.err.println("Erreur de parsing sur le .mod de " + modulePath);
+            this.dependences.put(name + ":" + version, null);
         }
+    }
+    
+    private String nullPrevent(String att) throws InvalidModException {
+        
+        if (!"null".equals(att))
+            return att;
+        else
+            throw new InvalidModException();
     }
     
     private boolean checkVersion(Module dep, String expectedVersion) {
@@ -110,14 +89,6 @@ class Module extends URLClassLoader {
             return true;
         else
             return false;
-    }
-    
-    public void addDependence( Module mod ) {
-        this.dependences.put( mod.name + ":" + mod.version, mod);
-    }
-   
-    public String run() {
-        return name;
     }
     
     public void invokeClass(String name, String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
@@ -134,28 +105,32 @@ class Module extends URLClassLoader {
         }
     }
     
+    public void addDependence( Module mod ) {
+        this.dependences.put( mod.name + ":" + mod.version, mod);
+    }
+   
+    public String run() {
+        return name;
+    }
+    
+    
     @Override
     public Class loadClass( String name ) throws ClassNotFoundException {
-        try {            
-            if ( findLoadedClass( name ) != null )
-                return findLoadedClass( name );
-            
-            else if ( isJDKClass( name ) )
-                return this.getClass().getClassLoader().loadClass( name );
+           
+        if ( findLoadedClass( name ) != null )
+            return findLoadedClass( name );
 
-            else if ( isInCurrentModule( name ) )
-                return super.loadClass( name );
-            
-            else if ( canLoad( name ) )
-                return loadFromDep( name );
-            
-            else
-                throw new Exception();
+        else if ( isJDKClass( name ) )
+            return this.getClass().getClassLoader().loadClass( name );
 
-        } catch (Exception ex) {
-                Logger.getLogger(Module.class.getName()).log(Level.SEVERE, "Unknown class : " + name + " exec in " + this.toString(), ex);
-                return null;
-        }
+        else if ( isInCurrentModule( name ) )
+            return super.loadClass( name );
+
+        else if ( canLoad( name ) )
+            return loadFromDep( name );
+
+        else
+            throw new ClassNotFoundException();
     }
     
     private Class loadFromDep( String name ) throws ClassNotFoundException {
@@ -178,17 +153,13 @@ class Module extends URLClassLoader {
     }
     
     private boolean isInCurrentModule( String name ) throws ClassNotFoundException {
-        Class clazz;
 
         try {
-            clazz = super.loadClass(name);
+            super.loadClass(name);
+            return true;
         } catch ( ClassNotFoundException e ) {
             return false;
         } 
-        
-        if ( clazz != null )    // Don't know if it is necessary
-            return true;
-        else return false;
     }
     
     private boolean isJDKClass( String name ) {
