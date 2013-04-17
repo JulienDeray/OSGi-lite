@@ -44,7 +44,6 @@ class Module extends URLClassLoader {
     }
 
     private void loadFiles(String modulePath) {
-        
         try{
             jarFile = new File(modulePath + ".jar");
             modFile = new File(modulePath + ".mod");
@@ -75,7 +74,7 @@ class Module extends URLClassLoader {
             this.dependences.put(name + ":" + version, null);
         }
     }
-    
+
     private String nullPrevent(String att) throws InvalidModException {
         
         if (!"null".equals(att))
@@ -109,11 +108,6 @@ class Module extends URLClassLoader {
         this.dependences.put( mod.name + ":" + mod.version, mod);
     }
    
-    public String run() {
-        return name;
-    }
-    
-    
     @Override
     public Class loadClass( String name ) throws ClassNotFoundException {
            
