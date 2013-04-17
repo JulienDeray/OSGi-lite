@@ -6,6 +6,7 @@ import exceptions.BadArgumentsException;
 import exceptions.DependenceNotFoundException;
 import exceptions.InvalidModException;
 import exceptions.NoMainModuleException;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -13,6 +14,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.simple.parser.ParseException;
+import sun.misc.JarFilter;
 
 /**
  * @author julien
@@ -21,29 +23,49 @@ import org.json.simple.parser.ParseException;
  *      Modules modules = new Modules("/Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/", "module2-1.0-SNAPSHOT", "module1-2.0-SNAPSHOT", "module1-1.0-SNAPSHOT", "module3-1.0-SNAPSHOT");
  *
  * Utilisation en ligne de commande :
- *      java -jar modules.jar -mp /Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/ module2-1.0-SNAPSHOT module1-2.0-SNAPSHOT module1-1.0-SNAPSHOT module3-1.0-SNAPSHOT
+ *      java -jar modules.jar -mprefix /Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/ -m module2-1.0-SNAPSHOT module1-2.0-SNAPSHOT module1-1.0-SNAPSHOT module3-1.0-SNAPSHOT
  */
 public class Modules {
 
     public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException, BadArgumentsException {
+        String[] modulesPaths;
         
-        if ( !args[0].equals( "-mp" ) )
+        if ( args[0].equals( "-mp" ) ) {
+            File folder = new File( args[1] );
+            if ( !folder.isDirectory() )
+                throw new BadArgumentsException(); 
+            int i = 0;
+            File[] modulesF = folder.listFiles(new JarFilter());
+            modulesPaths = new String[ modulesF.length ];
+            for( File pathModule : modulesF ) {
+                modulesPaths[i] = pathModule.getAbsolutePath().substring(0, pathModule.getAbsolutePath().length() - 4);
+                i++;
+            }
+        }
+        else if ( args[0].equals( "-m" ) ) {
+            modulesPaths = new String[ args.length - 1 ];
+            for (int i = 1; i < args.length; i++)
+                modulesPaths[i-1] = args[i];
+        }
+        else if ( args[0].equals( "-mprefix" ) ) {
+            if ( !args[2].equals( "-m" ) )
+                throw new BadArgumentsException();
+            modulesPaths = new String[ args.length - 3 ];
+            for (int i = 3; i < args.length; i++)
+                modulesPaths[i-3] = args[1] + args[i];
+        }
+        else {
             throw new BadArgumentsException();
+        }
         
-        String[] modulesPaths = new String[ args.length - 2 ];
-        for (int i = 2; i < args.length; i++)
-            modulesPaths[i-2] = args[i];
-        
-        Modules modules = new Modules(args[1], modulesPaths);
+        Modules modules = new Modules(modulesPaths);
     }
     
-    private String path;
     private Map<String, Module> listModules;
     //      Name:Version
 
-    public Modules(String path, String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException {
+    public Modules(String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException {
         this.listModules = new HashMap<String, Module>();
-        this.path = path;
         String[] args = {};
 
         for (String module : modulesToLoad)
@@ -57,7 +79,7 @@ public class Modules {
         
         mainModule.invokeClass( mainClassName, args );
     }
-    
+  
     private void displayDependencies() {
         System.out.println("--- Dependencies ---");
         for (Map.Entry pairs : listModules.entrySet()) {
@@ -67,8 +89,8 @@ public class Modules {
         System.out.println("\n");
     }
 
-    private Module loadModule(String fileName) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException {
-        URL url = new URL("jar:file:" + path + fileName + ".jar!/");
+    private Module loadModule(String path) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException {
+        URL url = new URL("jar:file:" + path + ".jar!/");
         Module mod = new Module( url );
         addToMap(mod);
         return mod;

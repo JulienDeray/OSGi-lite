@@ -36,9 +36,7 @@ class Module extends URLClassLoader {
     public Module(URL url) throws IOException, ParseException, InvalidModException {
         super(new URL[] { url });
         String modulePath = url.getPath().substring(5, url.getPath().length() - 6);
-        
         this.dependences = new HashMap<String, Module>();
-        
         loadFiles(modulePath); 
         scanModFile();
     }
