@@ -100,7 +100,7 @@ public class Modules {
     private void addToMap(Module mod) throws AllreadyAddedVersionException {
 
         if (listModules.containsKey( formatKey(mod) ))
-            throw new AllreadyAddedVersionException("Allready added version");
+            throw new AllreadyAddedVersionException();
         else
             listModules.put(formatKey(mod), mod);
     }
