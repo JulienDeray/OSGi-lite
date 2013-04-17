@@ -19,12 +19,8 @@ import sun.misc.JarFilter;
 /**
  * @author julien
  * 
- * Utilisation en full programatic :
- *      Modules modules = new Modules("/Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/", "module2-1.0-SNAPSHOT", "module1-2.0-SNAPSHOT", "module1-1.0-SNAPSHOT", "module3-1.0-SNAPSHOT");
- *
- * Utilisation en ligne de commande :
- *      java -jar modules.jar -mprefix /Users/julien/Serli/Weld-OSGI/ConteneurModulaire/Modules/modules/ -m module2-1.0-SNAPSHOT module1-2.0-SNAPSHOT module1-1.0-SNAPSHOT module3-1.0-SNAPSHOT
  */
+
 public class Modules {
 
     public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException, BadArgumentsException {
