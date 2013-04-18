@@ -14,6 +14,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.misc.JarFilter;
 
 
@@ -58,33 +60,33 @@ public class Modules {
         Modules modules = new Modules(modulesPaths);
     }
     
+    private static final Logger logger = LoggerFactory.getLogger(Modules.class);
+    
     private Map<String, Module> listModules;
     //      Name:Version
 
     public Modules(String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException {
         this.listModules = new HashMap<String, Module>();
         String[] args = {};
-
-        for (String module : modulesToLoad)
+        
+        logger.debug("--- Loading modules ---");
+        for (String module : modulesToLoad) {
             loadModule( module );
+            logger.debug("{} -> OK", module);
+        }
 
         setDependenciesGlobal();
-        //displayDependencies();
 
         Module mainModule = findMainModule();
-        String mainClassName = mainModule.getMainClass();
+        logger.debug("--- Main module found : {} ---", mainModule);
         
+        String mainClassName = mainModule.getMainClass();
+        logger.debug("--- Main class found in {} : {} ---", mainModule, mainClassName);
+        
+        logger.debug("--- Invoking main( ... ) ---");
         mainModule.invokeMain( mainClassName, args );
     }
   
-    private void displayDependencies() {
-        System.out.println("--- Dependencies ---");
-        for ( Module mod : listModules.values() ) {
-            System.out.println(mod + " -> " + mod.getDependenciesNames());
-        }
-        System.out.println("\n");
-    }
-
     private Module loadModule(String path) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException {
         URL url = new URL("jar:file:" + path + ".jar!/");
         Module mod = new Module( url );
@@ -98,6 +100,7 @@ public class Modules {
         for (String modCode : modDependenciesNames.keySet()) {
             if (this.listModules.containsKey(modCode)) {
                 mod.addDependence(this.listModules.get(modCode));
+                logger.debug("* {}", modCode);
             } else {
                 throw new DependenceNotFoundException( modCode );
             }
@@ -105,7 +108,9 @@ public class Modules {
     }
 
     private void setDependenciesGlobal() throws DependenceNotFoundException {
+        logger.debug("--- Loading dependences ---");
         for (Module mod : listModules.values()) {
+            logger.debug(" -> {}", mod);
             setDependencesLocal( mod );
         }
     }

@@ -17,6 +17,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -33,6 +35,8 @@ class Module extends URLClassLoader {
     private File jarFile;
     private File modFile;
 
+    private static final Logger logger = LoggerFactory.getLogger(Modules.class);
+    
     public Module(URL url) throws IOException, ParseException, InvalidModException {
         super(new URL[] { url });
         String modulePath = url.getPath().substring(5, url.getPath().length() - 6);
@@ -55,7 +59,7 @@ class Module extends URLClassLoader {
         this.name = nullPrevent( (String) jsonObject.get("name") );
         this.version = nullPrevent( (String) jsonObject.get("version") );
         this.mainClass = (String) jsonObject.get("mainClass");
-
+        
         // Dependencies
         JSONArray dependenciesJson = (JSONArray) jsonObject.get("dependencies");
         Iterator<String> iterator = dependenciesJson.iterator();
@@ -96,7 +100,8 @@ class Module extends URLClassLoader {
    
     @Override
     public Class loadClass( String name ) throws ClassNotFoundException {
-           
+        logger.debug("{} : Loading class {}", this.toString(), name );
+        
         if ( findLoadedClass( name ) != null )
             return findLoadedClass( name );
 
