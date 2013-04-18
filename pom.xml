@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.serli.jderay</groupId>
-  <artifactId>Modules</artifactId>
+  <artifactId>ModuleManager</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Modules</name>
+  <name>ModuleManager</name>
   <url>https://github.com/cRiMi/OSGi-lite</url>
 
   <properties>
