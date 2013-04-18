@@ -8,11 +8,11 @@ import com.serli.jderay.modules.Module;
 import java.util.Map;
 
 
-public class DependenciesVisitor {
+public class ModuleVisitor {
 
     private Module module;
     
-    public DependenciesVisitor(Module aModule) {
+    public ModuleVisitor(Module aModule) {
         this.module = aModule;
     }
     

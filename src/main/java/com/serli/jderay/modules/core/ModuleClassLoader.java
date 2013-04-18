@@ -13,10 +13,10 @@ import org.slf4j.LoggerFactory;
  */
 public class ModuleClassLoader extends URLClassLoader {
 
-    private DependenciesVisitor visitor;
+    private ModuleVisitor visitor;
     private static final Logger logger = LoggerFactory.getLogger(ModuleClassLoader.class);
     
-    public ModuleClassLoader(URL url, DependenciesVisitor visitor) {
+    public ModuleClassLoader(URL url, ModuleVisitor visitor) {
         super(new URL[] { url });
         this.visitor = visitor;
     }

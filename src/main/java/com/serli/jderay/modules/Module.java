@@ -1,7 +1,7 @@
 package com.serli.jderay.modules;
 
 
-import com.serli.jderay.modules.core.DependenciesVisitor;
+import com.serli.jderay.modules.core.ModuleVisitor;
 import com.serli.jderay.modules.core.ModuleClassLoader;
 import com.serli.jderay.modules.exceptions.InvalidModException;
 import java.io.File;
@@ -37,7 +37,7 @@ public class Module {
     private ModuleClassLoader classLoader;
 
     public Module(URL url) throws IOException, ParseException, InvalidModException {
-        this.classLoader = new ModuleClassLoader( url, new DependenciesVisitor( this ) );
+        this.classLoader = new ModuleClassLoader( url, new ModuleVisitor( this ) );
         String modulePath = url.getPath().substring(5, url.getPath().length() - 6);
         this.dependences = new HashMap<String, Module>();
         loadFiles(modulePath); 
