@@ -69,10 +69,10 @@ public class Modules {
         this.listModules = new HashMap<String, Module>();
         String[] args = {};
         
-        logger.debug("--- Loading modules ---");
+        logger.info("--- Loading modules ---");
         for (String module : modulesToLoad) {
             loadModule( module );
-            logger.debug("{} -> OK", module);
+            logger.info("{} -> OK", module);
         }
 
         setDependenciesGlobal();
@@ -83,7 +83,7 @@ public class Modules {
         String mainClassName = mainModule.getMainClass();
         logger.debug("--- Main class found in {} : {} ---", mainModule, mainClassName);
         
-        logger.debug("--- Invoking main( ... ) ---");
+        logger.info("--- Invoking main( ... ) ---");
         mainModule.invokeMain( mainClassName, args );
     }
   
