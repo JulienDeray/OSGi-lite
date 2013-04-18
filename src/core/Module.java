@@ -42,13 +42,8 @@ class Module extends URLClassLoader {
     }
 
     private void loadFiles(String modulePath) {
-        try{
-            jarFile = new File(modulePath + ".jar");
-            modFile = new File(modulePath + ".mod");
-        }
-        catch(Exception e) {
-            System.err.println("Le module " + modulePath + " n'existe pas.");
-        }
+        jarFile = new File(modulePath + ".jar");
+        modFile = new File(modulePath + ".mod");
     }
 
     private void scanModFile() throws IOException, ParseException, InvalidModException {
