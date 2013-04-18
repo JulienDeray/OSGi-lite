@@ -95,8 +95,7 @@ public class Modules {
     private void setDependencesLocal(Module mod) throws DependenceNotFoundException {
         Map<String, Module> modDependenciesNames = mod.getDependenciesNames();
 
-        for (Map.Entry pairs : modDependenciesNames.entrySet()) {
-            String modCode = (String) pairs.getKey();
+        for (String modCode : modDependenciesNames.keySet()) {
             if (this.listModules.containsKey(modCode)) {
                 mod.addDependence(this.listModules.get(modCode));
             } else {
@@ -106,8 +105,8 @@ public class Modules {
     }
 
     private void setDependenciesGlobal() throws DependenceNotFoundException {
-        for (Map.Entry pairs : listModules.entrySet()) {
-            setDependencesLocal( (Module) pairs.getValue() );
+        for (Module mod : listModules.values()) {
+            setDependencesLocal( mod );
         }
     }
 
