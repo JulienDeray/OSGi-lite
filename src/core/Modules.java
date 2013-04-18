@@ -68,7 +68,7 @@ public class Modules {
             loadModule( module );
 
         setDependenciesGlobal();
-        displayDependencies();
+        //displayDependencies();
 
         Module mainModule = findMainModule();
         String mainClassName = mainModule.getMainClass();
