@@ -17,10 +17,10 @@ Using command lines :
 ---------------------
 
 ### To include all modules in the pointed directory :
->java -jar Modules.jar -mp /the/path
+>java -jar Modules-1.0-SNAPSHOT.jar -mp /the/path
 
 ### To choose modules one by one with absolute path :
->java -jar Modules.jar -m /path/to/module1 /path/to/module2
+>java -jar Modules-1.0-SNAPSHOT.jar -m /path/to/module1 /path/to/module2
 
 ### To specify the common path and choose modules to include :
->java -jar Modules.jar -mprefix /path/to/modules -m module1 module2 module3
+>java -jar Modules-1.0-SNAPSHOT.jar -mprefix /path/to/modules -m module1 module2 module3
