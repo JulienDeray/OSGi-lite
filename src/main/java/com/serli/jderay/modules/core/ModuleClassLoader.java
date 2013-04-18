@@ -3,6 +3,8 @@ package com.serli.jderay.modules.core;
 import com.serli.jderay.modules.Module;
 import java.net.URL;
 import java.net.URLClassLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -12,6 +14,7 @@ import java.net.URLClassLoader;
 public class ModuleClassLoader extends URLClassLoader {
 
     private DependenciesVisitor visitor;
+    private static final Logger logger = LoggerFactory.getLogger(ModuleClassLoader.class);
     
     public ModuleClassLoader(URL url, DependenciesVisitor visitor) {
         super(new URL[] { url });
@@ -20,6 +23,7 @@ public class ModuleClassLoader extends URLClassLoader {
 
     @Override
     public Class loadClass( String name ) throws ClassNotFoundException {
+        logger.debug("{} : Loading class  {}", visitor.visitName(), name);
         
         if ( findLoadedClass( name ) != null )
             return findLoadedClass( name );
@@ -63,7 +67,7 @@ public class ModuleClassLoader extends URLClassLoader {
         if ( isInCurrentModule( name ) )
             return true;
         else
-            for ( Module mod : visitor.visit().values() ) {
+            for ( Module mod : visitor.visitDependencies().values() ) {
                 if ( mod.getClassLoader().isInCurrentModule(name) )
                     return true;
             }
@@ -71,7 +75,7 @@ public class ModuleClassLoader extends URLClassLoader {
     }
     
     private Class loadFromDep( String name ) throws ClassNotFoundException {
-        for ( Module mod : visitor.visit().values() ) {
+        for ( Module mod : visitor.visitDependencies().values() ) {
             if ( mod.getClassLoader().isInCurrentModule(name) )
                 return mod.getClassLoader().loadClass( name );
         }

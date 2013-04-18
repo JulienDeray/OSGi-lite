@@ -11,7 +11,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -19,8 +18,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -39,8 +36,6 @@ public class Module {
     
     private ModuleClassLoader classLoader;
 
-    private static final Logger logger = LoggerFactory.getLogger(Module.class);
-    
     public Module(URL url) throws IOException, ParseException, InvalidModException {
         this.classLoader = new ModuleClassLoader( url, new DependenciesVisitor( this ) );
         String modulePath = url.getPath().substring(5, url.getPath().length() - 6);
