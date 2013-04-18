@@ -81,13 +81,6 @@ class Module extends URLClassLoader {
             throw new InvalidModException();
     }
     
-    private boolean checkVersion(Module dep, String expectedVersion) {
-        if ( dep.getVersion().equals(expectedVersion) )
-            return true;
-        else
-            return false;
-    }
-    
     public void invokeMain(String name, String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
         Class c = loadClass(name);
         Method m = c.getMethod("main", new Class[]{args.getClass()});
@@ -127,7 +120,7 @@ class Module extends URLClassLoader {
     
     private Class loadFromDep( String name ) throws ClassNotFoundException {
         for ( Module mod : dependences.values() ) {
-            if ( mod.canLoad( name ) )
+            if ( mod.isInCurrentModule(name) )
                 return mod.loadClass( name );
         }
         throw new ClassNotFoundException();
@@ -138,7 +131,7 @@ class Module extends URLClassLoader {
             return true;
         else
             for ( Module mod : dependences.values() ) {
-                if ( mod.canLoad( name ) )
+                if ( mod.isInCurrentModule(name) )
                     return true;
             }
         return false;
