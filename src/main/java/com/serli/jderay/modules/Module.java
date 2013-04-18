@@ -1,6 +1,8 @@
 package com.serli.jderay.modules;
 
 
+import com.serli.jderay.modules.core.DependenciesVisitor;
+import com.serli.jderay.modules.core.ModuleClassLoader;
 import com.serli.jderay.modules.exceptions.InvalidModException;
 import java.io.File;
 import java.io.FileReader;
@@ -25,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author julien
  */
 
-class Module extends URLClassLoader {
+public class Module {
 
     private String name;
     private String version;
@@ -34,11 +36,13 @@ class Module extends URLClassLoader {
     
     private File jarFile;
     private File modFile;
+    
+    private ModuleClassLoader classLoader;
 
-    private static final Logger logger = LoggerFactory.getLogger(Modules.class);
+    private static final Logger logger = LoggerFactory.getLogger(Module.class);
     
     public Module(URL url) throws IOException, ParseException, InvalidModException {
-        super(new URL[] { url });
+        this.classLoader = new ModuleClassLoader( url, new DependenciesVisitor( this ) );
         String modulePath = url.getPath().substring(5, url.getPath().length() - 6);
         this.dependences = new HashMap<String, Module>();
         loadFiles(modulePath); 
@@ -81,7 +85,7 @@ class Module extends URLClassLoader {
     }
     
     public void invokeMain(String name, String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
-        Class c = loadClass(name);
+        Class c = classLoader.loadClass(name);
         Method m = c.getMethod("main", new Class[]{args.getClass()});
         m.setAccessible(true);
         int mods = m.getModifiers();
@@ -96,67 +100,6 @@ class Module extends URLClassLoader {
     
     public void addDependence( Module mod ) {
         this.dependences.put( mod.name + ":" + mod.version, mod);
-    }
-   
-    @Override
-    public Class loadClass( String name ) throws ClassNotFoundException {
-        logger.debug("{} : Loading class {}", this.toString(), name );
-        
-        if ( findLoadedClass( name ) != null )
-            return findLoadedClass( name );
-
-        else if ( isJDKClass( name ) )
-            return this.getClass().getClassLoader().loadClass( name );
-
-        else if ( isInCurrentModule( name ) )
-            return super.loadClass( name );
-
-        else if ( canBeLoadedFromDep( name ) )
-            return loadFromDep( name );
-
-        else
-            throw new ClassNotFoundException();
-    }
-    
-    private Class loadFromDep( String name ) throws ClassNotFoundException {
-        for ( Module mod : dependences.values() ) {
-            if ( mod.isInCurrentModule(name) )
-                return mod.loadClass( name );
-        }
-        throw new ClassNotFoundException();
-    }
-    
-    public boolean canBeLoadedFromDep( String name ) throws ClassNotFoundException {
-        if ( isInCurrentModule( name ) )
-            return true;
-        else
-            for ( Module mod : dependences.values() ) {
-                if ( mod.isInCurrentModule(name) )
-                    return true;
-            }
-        return false;
-    }
-    
-    private boolean isInCurrentModule( String name ) throws ClassNotFoundException {
-
-        try {
-            super.loadClass(name);
-            return true;
-        } catch ( ClassNotFoundException e ) {
-            return false;
-        } 
-    }
-    
-    private boolean isJDKClass( String name ) {
-        if ( name.startsWith( "java." )
-            || name.startsWith( "javax." )
-            || name.startsWith( "sun." )
-            || name.startsWith( "sunw." )
-            || name.startsWith( "com.sun." )
-            || name.startsWith( "org.w3c.dom" ) )
-            return true;
-        else
-            return false;
     }
     
     /*
@@ -184,6 +127,10 @@ class Module extends URLClassLoader {
 
     public String getVersion() {
         return version;
+    }
+
+    public ModuleClassLoader getClassLoader() {
+        return classLoader;
     }
     
     @Override

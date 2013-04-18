@@ -1,6 +1,7 @@
-package com.serli.jderay.modules;
+package com.serli.jderay.modules.impl;
 
-
+import com.serli.jderay.modules.Module;
+import com.serli.jderay.modules.ModuleManager;
 import com.serli.jderay.modules.exceptions.AllreadyAddedVersionException;
 import com.serli.jderay.modules.exceptions.BadArgumentsException;
 import com.serli.jderay.modules.exceptions.DependenceNotFoundException;
