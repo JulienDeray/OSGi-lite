@@ -24,7 +24,7 @@ import sun.misc.JarFilter;
  * 
  */
 
-public class Modules {
+public class Modules implements ModuleManager {
 
     public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException, BadArgumentsException {
         String[] modulesPaths;
@@ -67,6 +67,14 @@ public class Modules {
 
     public Modules(String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException {
         this.listModules = new HashMap<String, Module>();
+        loadAutomaticaly( modulesToLoad );
+    }
+
+    public Modules() {
+        this.listModules = new HashMap<String, Module>();    
+    }
+    
+    private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException, DependenceNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
         String[] args = {};
         
         logger.info("--- Loading modules ---");
@@ -75,7 +83,22 @@ public class Modules {
             logger.info("{} -> OK", module);
         }
 
-        setDependenciesGlobal();
+        setDependencies();
+
+        Module mainModule = findMainModule();
+        logger.debug("--- Main module found : {} ---", mainModule);
+        
+        String mainClassName = mainModule.getMainClass();
+        logger.debug("--- Main class found in {} : {} ---", mainModule, mainClassName);
+        
+        logger.info("--- Invoking main( ... ) ---");
+        mainModule.invokeMain( mainClassName, args );
+    }
+    
+    @Override
+    public void run() throws DependenceNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
+        setDependencies();
+        String[] args = {};
 
         Module mainModule = findMainModule();
         logger.debug("--- Main module found : {} ---", mainModule);
@@ -87,11 +110,11 @@ public class Modules {
         mainModule.invokeMain( mainClassName, args );
     }
   
-    private Module loadModule(String path) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException {
+    @Override
+    public void loadModule(String path) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException {
         URL url = new URL("jar:file:" + path + ".jar!/");
         Module mod = new Module( url );
         addToMap(mod);
-        return mod;
     }
 
     private void setDependencesLocal(Module mod) throws DependenceNotFoundException {
@@ -107,7 +130,7 @@ public class Modules {
         }
     }
 
-    private void setDependenciesGlobal() throws DependenceNotFoundException {
+    private void setDependencies() throws DependenceNotFoundException {
         logger.debug("--- Loading dependences ---");
         for (Module mod : listModules.values()) {
             logger.debug(" -> {}", mod);
