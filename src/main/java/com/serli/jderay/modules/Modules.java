@@ -1,11 +1,11 @@
-package core;
+package com.serli.jderay.modules;
 
 
-import exceptions.AllreadyAddedVersionException;
-import exceptions.BadArgumentsException;
-import exceptions.DependenceNotFoundException;
-import exceptions.InvalidModException;
-import exceptions.NoMainModuleException;
+import com.serli.jderay.modules.exceptions.AllreadyAddedVersionException;
+import com.serli.jderay.modules.exceptions.BadArgumentsException;
+import com.serli.jderay.modules.exceptions.DependenceNotFoundException;
+import com.serli.jderay.modules.exceptions.InvalidModException;
+import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.json.simple.parser.ParseException;
 import sun.misc.JarFilter;
+
 
 /**
  * @author julien

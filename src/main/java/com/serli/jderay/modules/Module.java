@@ -1,7 +1,7 @@
-package core;
+package com.serli.jderay.modules;
 
 
-import exceptions.InvalidModException;
+import com.serli.jderay.modules.exceptions.InvalidModException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
