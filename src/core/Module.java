@@ -88,7 +88,7 @@ class Module extends URLClassLoader {
             return false;
     }
     
-    public void invokeClass(String name, String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
+    public void invokeMain(String name, String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
         Class c = loadClass(name);
         Method m = c.getMethod("main", new Class[]{args.getClass()});
         m.setAccessible(true);

@@ -73,7 +73,7 @@ public class Modules {
         Module mainModule = findMainModule();
         String mainClassName = mainModule.getMainClass();
         
-        mainModule.invokeClass( mainClassName, args );
+        mainModule.invokeMain( mainClassName, args );
     }
   
     private void displayDependencies() {
