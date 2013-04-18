@@ -78,8 +78,7 @@ public class Modules {
   
     private void displayDependencies() {
         System.out.println("--- Dependencies ---");
-        for (Map.Entry pairs : listModules.entrySet()) {
-            Module mod = (Module) pairs.getValue();
+        for ( Module mod : listModules.values() ) {
             System.out.println(mod + " -> " + mod.getDependenciesNames());
         }
         System.out.println("\n");
