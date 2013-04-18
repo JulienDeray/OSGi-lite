@@ -57,7 +57,7 @@ public class Modules implements ModuleManager {
             throw new BadArgumentsException();
         }
         
-        Modules modules = new Modules(modulesPaths);
+        ModuleManager modules = new Modules(modulesPaths);
     }
     
     private static final Logger logger = LoggerFactory.getLogger(Modules.class);
