@@ -111,7 +111,7 @@ class Module extends URLClassLoader {
         else if ( isInCurrentModule( name ) )
             return super.loadClass( name );
 
-        else if ( canLoad( name ) )
+        else if ( canBeLoadedFromDep( name ) )
             return loadFromDep( name );
 
         else
@@ -126,7 +126,7 @@ class Module extends URLClassLoader {
         throw new ClassNotFoundException();
     }
     
-    public boolean canLoad( String name ) throws ClassNotFoundException {
+    public boolean canBeLoadedFromDep( String name ) throws ClassNotFoundException {
         if ( isInCurrentModule( name ) )
             return true;
         else
