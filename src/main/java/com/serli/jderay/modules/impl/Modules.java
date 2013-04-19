@@ -1,5 +1,7 @@
-package com.serli.jderay.modules;
+package com.serli.jderay.modules.impl;
 
+import com.serli.jderay.modules.Module;
+import com.serli.jderay.modules.ModuleManager;
 import com.serli.jderay.modules.exceptions.AllreadyAddedVersionException;
 import com.serli.jderay.modules.exceptions.BadArgumentsException;
 import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
@@ -52,7 +54,7 @@ public class Modules implements ModuleManager {
             modulesPaths = new String[ args.length - 3 ];
             for (int i = 3; i < args.length; i++)
                 modulesPaths[i-3] = args[1] + args[i];
-        }
+        } 
         else {
             throw new BadArgumentsException();
         }
@@ -65,13 +67,13 @@ public class Modules implements ModuleManager {
     private Map<String, Module> listModules;
     //      Name:Version
 
+    public Modules() {
+        this.listModules = new HashMap<String, Module>();    
+    }
+    
     public Modules(String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependencyNotFoundException, AllreadyAddedVersionException, NoMainModuleException, CyclicDependencyDetectedException {
         this.listModules = new HashMap<String, Module>();
         loadAutomaticaly( modulesToLoad );
-    }
-
-    public Modules() {
-        this.listModules = new HashMap<String, Module>();    
     }
     
     private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException {
@@ -85,6 +87,11 @@ public class Modules implements ModuleManager {
     
     @Override
     public void run() throws DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException {
+        if ( listModules.isEmpty() ) {
+            logger.error("Please load modules before run.");
+            return;
+        }
+        
         setDependencies();
         String[] args = {};
 
@@ -97,12 +104,26 @@ public class Modules implements ModuleManager {
         logger.info("--------------------- Invoking main(String[] args) ---------------------");
         mainModule.invokeMain( mainClassName, args );
     }
-  
+    
     @Override
     public void loadModule(String path) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException {
         URL url = new URL("jar:file:" + path + ".jar!/");
         Module mod = new Module( url );
         addToMap(mod);
+    }
+    
+    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, IOException, ParseException, InvalidModException, AllreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException  {
+        File folder = new File( globalPath );
+        if ( !folder.isDirectory() )
+            throw new BadArgumentsException(); 
+        int i = 0;
+        File[] modulesF = folder.listFiles(new JarFilter());
+        String[] modulesPaths = new String[ modulesF.length ];
+        for( File pathModule : modulesF ) {
+            modulesPaths[i] = pathModule.getAbsolutePath().substring(0, pathModule.getAbsolutePath().length() - 4);
+            i++;
+        }
+        loadAutomaticaly( modulesPaths );
     }
 
     private void setDependenciesLocal(Module mod) throws DependencyNotFoundException, CyclicDependencyDetectedException {
