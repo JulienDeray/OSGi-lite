@@ -75,7 +75,7 @@ public class Modules implements ModuleManager {
     }
     
     private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException {
-        logger.info("--- Loading modules ---");
+        logger.info("--------------------- Loading modules ---------------------");
         for (String module : modulesToLoad) {
             loadModule( module );
             logger.info("{} -> OK", module);
@@ -89,12 +89,12 @@ public class Modules implements ModuleManager {
         String[] args = {};
 
         Module mainModule = findMainModule();
-        logger.debug("--- Main module found : {} ---", mainModule);
+        logger.debug("--------------------- Main module found : {} ---------------------", mainModule);
         
         String mainClassName = mainModule.getMainClass();
-        logger.debug("--- Main class found in {} : {} ---", mainModule, mainClassName);
+        logger.debug("--------------------- Main class found in {} : {} ---------------------", mainModule, mainClassName);
         
-        logger.info("--- Invoking main( ... ) ---");
+        logger.info("--------------------- Invoking main(String[] args) ---------------------");
         mainModule.invokeMain( mainClassName, args );
     }
   
@@ -112,7 +112,7 @@ public class Modules implements ModuleManager {
             if (this.listModules.containsKey(modCode)) {
                 Module foundeDependency = this.listModules.get(modCode);
                 mod.addDependency( foundeDependency );
-                logger.debug("* {}", modCode);
+                logger.debug("     * {}", modCode);
             } else {
                 throw new DependencyNotFoundException( modCode );
             }
@@ -120,7 +120,7 @@ public class Modules implements ModuleManager {
     }
     
     private void checkCyclicDependency() throws CyclicDependencyDetectedException {
-        logger.debug("--- Checking cyclic dependencies ---");
+        logger.debug("--------------------- Checking cyclic dependencies ---------------------");
         for (Module mod : listModules.values()) {
             for (Module dep : mod.getDependencies().values() ) {
                 if (dep.getDependencies().containsKey(mod.toString()))
@@ -128,11 +128,12 @@ public class Modules implements ModuleManager {
                 else
                     dep.checkClyclicDependency( mod );
             }
+            logger.debug("{} -> OK", mod);
         }
     }
 
     private void setDependencies() throws DependencyNotFoundException, CyclicDependencyDetectedException {
-        logger.debug("--- Loading dependences ---");
+        logger.debug("--------------------- Loading dependences ---------------------");
         for (Module mod : listModules.values()) {
             logger.debug(" -> {}", mod);
             if ( !mod.getDependencies().isEmpty() )
