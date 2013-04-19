@@ -75,24 +75,12 @@ public class Modules implements ModuleManager {
     }
     
     private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException {
-        String[] args = {};
-        
         logger.info("--- Loading modules ---");
         for (String module : modulesToLoad) {
             loadModule( module );
             logger.info("{} -> OK", module);
         }
-
-        setDependencies();
-
-        Module mainModule = findMainModule();
-        logger.debug("--- Main module found : {} ---", mainModule);
-        
-        String mainClassName = mainModule.getMainClass();
-        logger.debug("--- Main class found in {} : {} ---", mainModule, mainClassName);
-        
-        logger.info("--- Invoking main( ... ) ---");
-        mainModule.invokeMain( mainClassName, args );
+        run();
     }
     
     @Override
