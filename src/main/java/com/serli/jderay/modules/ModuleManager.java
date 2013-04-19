@@ -23,7 +23,7 @@ public interface ModuleManager {
      * @throws InvalidModException
      * @throws AllreadyAddedVersionException
      */
-    void loadModule(String path) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException;
+    public void loadModule(String path) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException;
 
     /**
      * Run the program. The method first look at dependences (check and resolve them), then search the main module and its main class. Finally, it launchs the main class.
@@ -33,6 +33,6 @@ public interface ModuleManager {
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
      */
-    void run() throws DependenceNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException;
+    public void run() throws DependenceNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException;
 
 }
