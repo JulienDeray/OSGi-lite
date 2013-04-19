@@ -11,7 +11,21 @@ Run
 Programmatically : 
 ------------------
 
->ModuleManager modules = new Modules(String[] modulesPaths);
+>ModuleManager modules = new Modules("/path/to/module1", "/path/to/module2", ...);
+
+or
+
+>ModuleManager modules = new Modules();
+>modules.loadModule("path/to/module1");
+>modules.loadModule("path/to/module2");
+>[...]
+>modules.run();
+
+or
+
+>ModuleManager modules = new Modules();
+>modules.loadModulesFromDirectory("/the/global/path");
+>modules.run();
 
 Using command lines :
 ---------------------
