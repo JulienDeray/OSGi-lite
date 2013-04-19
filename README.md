@@ -28,7 +28,9 @@ or
 or
 
 >ModuleManager modules = new Modules();
+
 >modules.loadModulesFromDirectory("/the/global/path");
+
 >modules.run();
 
 Using command lines :
