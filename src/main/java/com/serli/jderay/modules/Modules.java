@@ -1,10 +1,9 @@
-package com.serli.jderay.modules.impl;
+package com.serli.jderay.modules;
 
-import com.serli.jderay.modules.Module;
-import com.serli.jderay.modules.ModuleManager;
 import com.serli.jderay.modules.exceptions.AllreadyAddedVersionException;
 import com.serli.jderay.modules.exceptions.BadArgumentsException;
-import com.serli.jderay.modules.exceptions.DependenceNotFoundException;
+import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
+import com.serli.jderay.modules.exceptions.DependencyNotFoundException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
 import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import java.io.File;
@@ -27,7 +26,7 @@ import sun.misc.JarFilter;
 
 public class Modules implements ModuleManager {
 
-    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException, BadArgumentsException {
+    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependencyNotFoundException, AllreadyAddedVersionException, NoMainModuleException, BadArgumentsException, CyclicDependencyDetectedException {
         String[] modulesPaths;
         
         if ( args[0].equals( "-mp" ) ) {
@@ -66,7 +65,7 @@ public class Modules implements ModuleManager {
     private Map<String, Module> listModules;
     //      Name:Version
 
-    public Modules(String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependenceNotFoundException, AllreadyAddedVersionException, NoMainModuleException {
+    public Modules(String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependencyNotFoundException, AllreadyAddedVersionException, NoMainModuleException, CyclicDependencyDetectedException {
         this.listModules = new HashMap<String, Module>();
         loadAutomaticaly( modulesToLoad );
     }
@@ -75,7 +74,7 @@ public class Modules implements ModuleManager {
         this.listModules = new HashMap<String, Module>();    
     }
     
-    private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException, DependenceNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
+    private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException {
         String[] args = {};
         
         logger.info("--- Loading modules ---");
@@ -97,7 +96,7 @@ public class Modules implements ModuleManager {
     }
     
     @Override
-    public void run() throws DependenceNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
+    public void run() throws DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException {
         setDependencies();
         String[] args = {};
 
@@ -118,25 +117,41 @@ public class Modules implements ModuleManager {
         addToMap(mod);
     }
 
-    private void setDependencesLocal(Module mod) throws DependenceNotFoundException {
-        Map<String, Module> modDependenciesNames = mod.getDependenciesNames();
-
+    private void setDependenciesLocal(Module mod) throws DependencyNotFoundException, CyclicDependencyDetectedException {
+        Map<String, Module> modDependenciesNames = mod.getDependencies();
+        
         for (String modCode : modDependenciesNames.keySet()) {
             if (this.listModules.containsKey(modCode)) {
-                mod.addDependence(this.listModules.get(modCode));
+                Module foundeDependency = this.listModules.get(modCode);
+                mod.addDependency( foundeDependency );
                 logger.debug("* {}", modCode);
             } else {
-                throw new DependenceNotFoundException( modCode );
+                throw new DependencyNotFoundException( modCode );
+            }
+        }
+    }
+    
+    private void checkCyclicDependency() throws CyclicDependencyDetectedException {
+        logger.debug("--- Checking cyclic dependencies ---");
+        for (Module mod : listModules.values()) {
+            for (Module dep : mod.getDependencies().values() ) {
+                logger.debug( "checking {} dependency : {}", mod, dep);
+                if (dep.getDependencies().containsKey(mod.toString()))
+                    throw new CyclicDependencyDetectedException("Direct Cyclic Dependency : " + mod + " <-> " + dep);
+                else
+                    dep.checkClyclicDependency( mod );
             }
         }
     }
 
-    private void setDependencies() throws DependenceNotFoundException {
+    private void setDependencies() throws DependencyNotFoundException, CyclicDependencyDetectedException {
         logger.debug("--- Loading dependences ---");
         for (Module mod : listModules.values()) {
             logger.debug(" -> {}", mod);
-            setDependencesLocal( mod );
+            if ( !mod.getDependencies().isEmpty() )
+                setDependenciesLocal( mod );
         }
+        checkCyclicDependency();
     }
 
     private String formatKey(Module mod) {

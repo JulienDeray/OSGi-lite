@@ -17,7 +17,7 @@ public class ModuleVisitor {
     }
     
     public Map<String, Module> visitDependencies() {
-        return this.module.getDependenciesNames();
+        return this.module.getDependencies();
     }
     
     public String visitName() {

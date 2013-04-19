@@ -3,6 +3,7 @@ package com.serli.jderay.modules;
 
 import com.serli.jderay.modules.core.ModuleVisitor;
 import com.serli.jderay.modules.core.ModuleClassLoader;
+import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
 import java.io.File;
 import java.io.FileReader;
@@ -29,7 +30,7 @@ public class Module {
     private String name;
     private String version;
     private String mainClass;
-    private Map<String, Module> dependences;
+    private Map<String, Module> dependencies;
     
     private File jarFile;
     private File modFile;
@@ -39,7 +40,7 @@ public class Module {
     public Module(URL url) throws IOException, ParseException, InvalidModException {
         this.classLoader = new ModuleClassLoader( url, new ModuleVisitor( this ) );
         String modulePath = url.getPath().substring(5, url.getPath().length() - 6);
-        this.dependences = new HashMap<String, Module>();
+        this.dependencies = new HashMap<String, Module>();
         loadFiles(modulePath); 
         scanModFile();
     }
@@ -67,7 +68,7 @@ public class Module {
             String name = nameAndVersion.substring(0, nameAndVersion.indexOf(":"));
             String version = nameAndVersion.substring(nameAndVersion.indexOf(":") + 1, nameAndVersion.length());
 
-            this.dependences.put(name + ":" + version, null);
+            this.dependencies.put(name + ":" + version, null);
         }
     }
 
@@ -92,9 +93,19 @@ public class Module {
         } catch (IllegalAccessException e) {
         }
     }
+
+    public void checkClyclicDependency(Module mod) throws CyclicDependencyDetectedException {
+        if ( !dependencies.isEmpty() )
+            for (Module dep : dependencies.values()) {
+                if (dep.dependencies.containsKey( mod.toString() ))
+                    throw new CyclicDependencyDetectedException("Indirect Cyclic Dependency : " + mod + " <-> " + dep);
+                else
+                    dep.checkClyclicDependency(mod);
+            }
+    }
     
-    public void addDependence( Module mod ) {
-        this.dependences.put( mod.name + ":" + mod.version, mod);
+    public void addDependency( Module mod ) {
+        this.dependencies.put( mod.name + ":" + mod.version, mod);
     }
     
     /*
@@ -104,8 +115,8 @@ public class Module {
         return jarFile;
     }
 
-    public Map<String, Module> getDependenciesNames() {
-        return dependences;
+    public Map<String, Module> getDependencies() {
+        return dependencies;
     }
 
     public String getMainClass() {
@@ -132,5 +143,5 @@ public class Module {
     public String toString() {
         return this.name + ":" + this.version;
     }
-
+    
 }

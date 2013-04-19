@@ -1,7 +1,8 @@
 package com.serli.jderay.modules;
 
 import com.serli.jderay.modules.exceptions.AllreadyAddedVersionException;
-import com.serli.jderay.modules.exceptions.DependenceNotFoundException;
+import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
+import com.serli.jderay.modules.exceptions.DependencyNotFoundException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
 import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import java.io.IOException;
@@ -33,6 +34,6 @@ public interface ModuleManager {
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
      */
-    public void run() throws DependenceNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException;
+    public void run() throws DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException;
 
 }
