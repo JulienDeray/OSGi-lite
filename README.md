@@ -16,9 +16,13 @@ Programmatically :
 or
 
 >ModuleManager modules = new Modules();
+
 >modules.loadModule("path/to/module1");
+
 >modules.loadModule("path/to/module2");
+
 >[...]
+
 >modules.run();
 
 or
