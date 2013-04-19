@@ -123,7 +123,6 @@ public class Modules implements ModuleManager {
         logger.debug("--- Checking cyclic dependencies ---");
         for (Module mod : listModules.values()) {
             for (Module dep : mod.getDependencies().values() ) {
-                logger.debug( "checking {} dependency : {}", mod, dep);
                 if (dep.getDependencies().containsKey(mod.toString()))
                     throw new CyclicDependencyDetectedException("Direct Cyclic Dependency : " + mod + " <-> " + dep);
                 else
