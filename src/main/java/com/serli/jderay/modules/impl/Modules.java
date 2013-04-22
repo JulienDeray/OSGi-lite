@@ -68,11 +68,11 @@ public class Modules implements ModuleManager {
     //      Name:Version
 
     public Modules() {
-        this.listModules = new HashMap<String, Module>();    
+        this.listModules = new HashMap<>();    
     }
     
     public Modules(String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependencyNotFoundException, AllreadyAddedVersionException, NoMainModuleException, CyclicDependencyDetectedException {
-        this.listModules = new HashMap<String, Module>();
+        this.listModules = new HashMap<>();
         loadAutomaticaly( modulesToLoad );
     }
     
@@ -83,6 +83,18 @@ public class Modules implements ModuleManager {
             logger.info("{} -> OK", module);
         }
         run();
+    }
+    
+    
+    @Override
+    public Class getMainClass() {
+        try {
+            Module mainModule = findMainModule();
+            return mainModule.getClassLoader().loadClass( mainModule.getMainClass() );
+        }
+        catch( NoMainModuleException | ClassNotFoundException e ) {
+            return null;
+        }
     }
     
     @Override
@@ -112,6 +124,7 @@ public class Modules implements ModuleManager {
         addToMap(mod);
     }
     
+    @Override
     public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, IOException, ParseException, InvalidModException, AllreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException  {
         File folder = new File( globalPath );
         if ( !folder.isDirectory() )
