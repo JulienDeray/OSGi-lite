@@ -164,4 +164,13 @@ public class Modules implements ModuleManager {
         throw new NoMainModuleException();
     }
 
+    @Override
+    public void listModules() {
+        int i = 0;
+        for ( Module mod : listModules.values() ) {
+            System.out.println(i + " : " + mod.toString());
+            i++;
+        }
+    }
+
 }

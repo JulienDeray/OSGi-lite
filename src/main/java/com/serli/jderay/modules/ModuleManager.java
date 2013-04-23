@@ -28,6 +28,11 @@ public interface ModuleManager {
     public void loadModule(String path) throws IOException, ParseException, InvalidModException, AlreadyAddedVersionException;
     
     /**
+     * List loaded modules
+     */
+    public void listModules();
+    
+    /**
      * Load all modules (.jar) founded  into the directory in the module manager. 
      * @param path  Absolute path of the directory containing the modules
      * @throws IOException
