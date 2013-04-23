@@ -23,7 +23,7 @@ public interface ModuleManager {
      * @throws IOException
      * @throws ParseException
      * @throws InvalidModException
-     * @throws AllreadyAddedVersionException
+     * @throws AlreadyAddedVersionException
      */
     public void loadModule(String path) throws IOException, ParseException, InvalidModException, AlreadyAddedVersionException;
     
@@ -33,7 +33,7 @@ public interface ModuleManager {
      * @throws IOException
      * @throws ParseException
      * @throws InvalidModException
-     * @throws AllreadyAddedVersionException
+     * @throws AlreadyAddedVersionException
      */
     public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, IOException, ParseException, InvalidModException, AlreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException;
 
