@@ -54,7 +54,7 @@ public class Modules implements ModuleManager {
         run();
     }
     
-    
+
     @Override
     public Class getMainClass() {
         try {
