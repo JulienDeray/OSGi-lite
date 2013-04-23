@@ -40,7 +40,7 @@ public class Module {
     public Module(URL url) throws IOException, ParseException, InvalidModException {
         this.classLoader = new ModuleClassLoader( url, new ModuleVisitor( this ) );
         String modulePath = url.getPath().substring(5, url.getPath().length() - 6);
-        this.dependencies = new HashMap<String, Module>();
+        this.dependencies = new HashMap<>();
         loadFiles(modulePath); 
         scanModFile();
     }
