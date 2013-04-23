@@ -1,6 +1,6 @@
 package com.serli.jderay.modules;
 
-import com.serli.jderay.modules.exceptions.AllreadyAddedVersionException;
+import com.serli.jderay.modules.exceptions.AlreadyAddedVersionException;
 import com.serli.jderay.modules.exceptions.BadArgumentsException;
 import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
 import com.serli.jderay.modules.exceptions.DependencyNotFoundException;
@@ -25,7 +25,7 @@ public interface ModuleManager {
      * @throws InvalidModException
      * @throws AllreadyAddedVersionException
      */
-    public void loadModule(String path) throws IOException, ParseException, InvalidModException, AllreadyAddedVersionException;
+    public void loadModule(String path) throws IOException, ParseException, InvalidModException, AlreadyAddedVersionException;
     
     /**
      * Load all modules (.jar) founded  into the directory in the module manager. 
@@ -35,7 +35,7 @@ public interface ModuleManager {
      * @throws InvalidModException
      * @throws AllreadyAddedVersionException
      */
-    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, IOException, ParseException, InvalidModException, AllreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException;
+    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, IOException, ParseException, InvalidModException, AlreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException;
 
     /**
      * Run the program. The method first look at dependences (check and resolve them), then search the main module and its main class. Finally, it launchs the main class.
