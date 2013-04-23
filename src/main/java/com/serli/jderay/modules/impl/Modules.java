@@ -113,8 +113,8 @@ public class Modules implements ModuleManager {
         
         for (String modCode : modDependenciesNames.keySet()) {
             if (this.listModules.containsKey(modCode)) {
-                Module foundeDependency = this.listModules.get(modCode);
-                mod.addDependency( foundeDependency );
+                Module foundedDependency = this.listModules.get(modCode);
+                mod.addDependency( foundedDependency );
                 logger.debug("     * {}", modCode);
             } else {
                 throw new DependencyNotFoundException( modCode );
