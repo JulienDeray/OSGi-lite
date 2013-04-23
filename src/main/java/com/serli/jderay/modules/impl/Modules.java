@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
@@ -171,6 +173,11 @@ public class Modules implements ModuleManager {
             System.out.println(i + " : " + mod.toString());
             i++;
         }
+    }
+
+    @Override
+    public List<Module> getLoadedModules() {
+        return new ArrayList<>( listModules.values() );
     }
 
 }

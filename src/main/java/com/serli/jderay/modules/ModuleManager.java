@@ -8,6 +8,7 @@ import com.serli.jderay.modules.exceptions.InvalidModException;
 import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import org.json.simple.parser.ParseException;
 
 
@@ -56,4 +57,9 @@ public interface ModuleManager {
      * Return the main class if founded in the loaded modules. Else, return null.
      */
     public Class getMainClass();
+    
+    /**
+     * Return a list of the loaded modules.
+     */
+    public List<Module> getLoadedModules();
 }
