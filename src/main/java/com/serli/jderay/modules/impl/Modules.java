@@ -143,8 +143,6 @@ public class Modules implements ModuleManager {
             if ( !mod.getDependencies().isEmpty() )
                 setDependenciesLocal( mod );
         }
-        for ( Module mod : listModules.values() )
-            System.out.println( "in " + mod + " -> " + mod.getDependencies());
         
         checkCyclicDependency();
         
