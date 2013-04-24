@@ -9,6 +9,7 @@ import com.serli.jderay.modules.exceptions.BadArgumentsException;
 import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
 import com.serli.jderay.modules.exceptions.DependencyNotFoundException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
+import com.serli.jderay.modules.exceptions.MultipleMainModulesFoundedException;
 import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import com.serli.jderay.modules.impl.Modules;
 import java.io.File;
@@ -21,7 +22,7 @@ import sun.misc.JarFilter;
 
 public class Launch {
 
-    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependencyNotFoundException, AlreadyAddedVersionException, NoMainModuleException, BadArgumentsException, CyclicDependencyDetectedException {
+    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependencyNotFoundException, AlreadyAddedVersionException, NoMainModuleException, BadArgumentsException, CyclicDependencyDetectedException, MultipleMainModulesFoundedException {
         String[] modulesPaths;
         
         if ( args[0].equals( "-mp" ) ) {
