@@ -5,6 +5,7 @@ import com.serli.jderay.modules.exceptions.BadArgumentsException;
 import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
 import com.serli.jderay.modules.exceptions.DependencyNotFoundException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
+import com.serli.jderay.modules.exceptions.MultipleMainModulesFoundedException;
 import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -41,7 +42,7 @@ public interface ModuleManager {
      * @throws InvalidModException
      * @throws AlreadyAddedVersionException
      */
-    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, IOException, ParseException, InvalidModException, AlreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException;
+    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, MultipleMainModulesFoundedException, IOException, ParseException, InvalidModException, AlreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException;
 
     /**
      * Run the program. The method first look at dependences (check and resolve them), then search the main module and its main class. Finally, it launchs the main class.
@@ -51,7 +52,7 @@ public interface ModuleManager {
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
      */
-    public void run() throws DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException;
+    public void run() throws DependencyNotFoundException, MultipleMainModulesFoundedException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException;
 
     /**
      * @return Main class if founded in the loaded modules. Else, return null.

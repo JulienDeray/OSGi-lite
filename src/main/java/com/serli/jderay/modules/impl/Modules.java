@@ -8,6 +8,7 @@ import com.serli.jderay.modules.exceptions.BadArgumentsException;
 import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
 import com.serli.jderay.modules.exceptions.DependencyNotFoundException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
+import com.serli.jderay.modules.exceptions.MultipleMainModulesFoundedException;
 import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import java.io.File;
 import java.io.IOException;
@@ -41,12 +42,12 @@ public class Modules implements ModuleManager {
         this.listModules = new HashMap<>();    
     }
     
-    public Modules(String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependencyNotFoundException, AlreadyAddedVersionException, NoMainModuleException, CyclicDependencyDetectedException {
+    public Modules(String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependencyNotFoundException, AlreadyAddedVersionException, NoMainModuleException, CyclicDependencyDetectedException, MultipleMainModulesFoundedException {
         this.listModules = new HashMap<>();
         loadAutomaticaly( modulesToLoad );
     }
     
-    private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, InvalidModException, AlreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException {
+    private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, InvalidModException, AlreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException, MultipleMainModulesFoundedException {
         logger.info("--------------------- Loading modules ---------------------");
         for (String module : modulesToLoad) {
             loadModule( module );
@@ -62,13 +63,13 @@ public class Modules implements ModuleManager {
             Module mainModule = findMainModule();
             return mainModule.getClassLoader().loadClass( mainModule.getMainClass() );
         }
-        catch( NoMainModuleException | ClassNotFoundException e ) {
+        catch( NoMainModuleException | ClassNotFoundException | MultipleMainModulesFoundedException e ) {
             return null;
         }
     }
     
     @Override
-    public void run() throws DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException {
+    public void run() throws DependencyNotFoundException, MultipleMainModulesFoundedException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException {
         if ( listModules.isEmpty() ) {
             logger.error("Please load modules before run.");
             return;
@@ -97,7 +98,7 @@ public class Modules implements ModuleManager {
     }
     
     @Override
-    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, IOException, ParseException, InvalidModException, AlreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException  {
+    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, MultipleMainModulesFoundedException, IOException, ParseException, InvalidModException, AlreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException  {
         File folder = new File( globalPath );
         if ( !folder.isDirectory() )
             throw new BadArgumentsException(); 
@@ -164,13 +165,25 @@ public class Modules implements ModuleManager {
             listModules.put(formatKey(mod), mod);
     }
 
-    private Module findMainModule() throws NoMainModuleException {
+    private Module findMainModule() throws NoMainModuleException, MultipleMainModulesFoundedException {
+        List<Module> multiMain = new ArrayList<>();
         
         for ( Module mod : listModules.values() ) {
-            if ( mod.getMainClass() != null ) 
-                return mod;
+            if ( mod.getMainClass() != null ) {
+                multiMain.add(mod);
+            }
         }
-        throw new NoMainModuleException();
+        
+        if ( multiMain.size() == 1 )
+            return multiMain.get(0);
+        else if ( multiMain.isEmpty() )
+            throw new NoMainModuleException();
+        else {
+            String exceptionMessage = "";
+            for ( Module mod : multiMain )
+                exceptionMessage += mod.toString() + " ; ";
+            throw new MultipleMainModulesFoundedException( exceptionMessage );
+        }
     }
 
     @Override
