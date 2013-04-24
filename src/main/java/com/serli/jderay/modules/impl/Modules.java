@@ -147,10 +147,9 @@ public class Modules implements ModuleManager {
             System.out.println( "in " + mod + " -> " + mod.getDependencies());
         
         checkCyclicDependency();
-        listModules = TransitivityResolver.resolve( listModules );
         
-        for ( Module mod : listModules.values() )
-            System.out.println( "in " + mod + " -> " + mod.getDependencies());
+        logger.debug("--------------------- Resolving transitive dependencies  ---------------------");
+        listModules = TransitivityResolver.resolve( listModules );
     }
 
     private String formatKey(Module mod) {
