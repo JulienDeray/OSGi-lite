@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,13 +65,13 @@ public class Modules implements ModuleManager {
             Module mainModule = findMainModule();
             return mainModule.getClassLoader().loadClass( mainModule.getMainClass() );
         }
-        catch( NoMainModuleException | ClassNotFoundException | MultipleMainModulesFoundedException e ) {
+        catch( MainModuleException | ClassNotFoundException e ) {
             return null;
         }
     }
     
     @Override
-    public void run() throws DependencyException, MultipleMainModulesFoundedException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
+    public void run() throws DependencyException, MainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
         if ( listModules.isEmpty() ) {
             logger.error("Please load modules before run.");
             return;
@@ -115,7 +114,7 @@ public class Modules implements ModuleManager {
         loadAutomaticaly( modulesPaths );
     }
 
-    private void setDependenciesLocal(Module mod) throws DependencyNotFoundException, CyclicDependencyDetectedException {
+    private void setDependenciesLocal(Module mod) throws DependencyException {
         Map<String, Module> modDependenciesNames = mod.getDependencies();
         
         for (String modCode : modDependenciesNames.keySet()) {
@@ -142,7 +141,7 @@ public class Modules implements ModuleManager {
         }
     }
 
-    private void setDependencies() throws DependencyNotFoundException, CyclicDependencyDetectedException {
+    private void setDependencies() throws DependencyException {
         logger.debug("--------------------- Loading dependences ---------------------");
         for (Module mod : listModules.values()) {
             logger.debug(" -> {}", mod);
@@ -168,7 +167,7 @@ public class Modules implements ModuleManager {
             listModules.put(formatKey(mod), mod);
     }
 
-    private Module findMainModule() throws NoMainModuleException, MultipleMainModulesFoundedException {
+    private Module findMainModule() throws MainModuleException {
         List<Module> multiMain = new ArrayList<>();
         
         for ( Module mod : listModules.values() ) {
