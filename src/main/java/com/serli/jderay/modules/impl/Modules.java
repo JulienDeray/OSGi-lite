@@ -2,6 +2,7 @@ package com.serli.jderay.modules.impl;
 
 import com.serli.jderay.modules.Module;
 import com.serli.jderay.modules.ModuleManager;
+import com.serli.jderay.modules.core.TransitivityResolver;
 import com.serli.jderay.modules.exceptions.AlreadyAddedVersionException;
 import com.serli.jderay.modules.exceptions.BadArgumentsException;
 import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
@@ -142,7 +143,14 @@ public class Modules implements ModuleManager {
             if ( !mod.getDependencies().isEmpty() )
                 setDependenciesLocal( mod );
         }
+        for ( Module mod : listModules.values() )
+            System.out.println( "in " + mod + " -> " + mod.getDependencies());
+        
         checkCyclicDependency();
+        listModules = TransitivityResolver.resolve( listModules );
+        
+        for ( Module mod : listModules.values() )
+            System.out.println( "in " + mod + " -> " + mod.getDependencies());
     }
 
     private String formatKey(Module mod) {

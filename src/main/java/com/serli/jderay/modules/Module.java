@@ -138,6 +138,10 @@ public class Module {
     public ModuleClassLoader getClassLoader() {
         return classLoader;
     }
+
+    public void setDependencies(Map<String, Module> dependencies) {
+        this.dependencies = dependencies;
+    }
     
     @Override
     public String toString() {
