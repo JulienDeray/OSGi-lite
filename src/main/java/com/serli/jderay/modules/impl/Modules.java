@@ -93,7 +93,7 @@ public class Modules implements ModuleManager {
     }
     
     @Override
-    public void loadModule(String path) throws IOException, ParseException, InvalidModException, AlreadyAddedVersionException {
+    public void loadModule(String path) throws IOException, ParseException, DependencyException, InvalidModException {
         URL url = new URL("jar:file:" + path + ".jar!/");
         Module mod = new Module( url );
         addToMap(mod);
@@ -128,7 +128,7 @@ public class Modules implements ModuleManager {
         }
     }
     
-    private void checkCyclicDependency() throws CyclicDependencyDetectedException {
+    private void checkCyclicDependency() throws DependencyException {
         logger.debug("--------------------- Checking cyclic dependencies ---------------------");
         for (Module mod : listModules.values()) {
             for (Module dep : mod.getDependencies().values() ) {
@@ -159,7 +159,7 @@ public class Modules implements ModuleManager {
         return mod.getName() + ":" + mod.getVersion();
     }
 
-    private void addToMap(Module mod) throws AlreadyAddedVersionException {
+    private void addToMap(Module mod) throws DependencyException {
 
         if (listModules.containsKey( formatKey(mod) ))
             throw new AlreadyAddedVersionException();

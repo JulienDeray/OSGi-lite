@@ -4,6 +4,7 @@ package com.serli.jderay.modules;
 import com.serli.jderay.modules.core.ModuleVisitor;
 import com.serli.jderay.modules.core.ModuleClassLoader;
 import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
+import com.serli.jderay.modules.exceptions.DependencyException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
 import java.io.File;
 import java.io.FileReader;
@@ -94,7 +95,7 @@ public class Module {
         }
     }
 
-    public void checkClyclicDependency(Module mod) throws CyclicDependencyDetectedException {
+    public void checkClyclicDependency(Module mod) throws DependencyException {
         if ( !dependencies.isEmpty() )
             for (Module dep : dependencies.values()) {
                 if (dep.dependencies.containsKey( mod.toString() ))

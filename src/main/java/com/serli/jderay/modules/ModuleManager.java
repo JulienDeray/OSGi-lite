@@ -26,7 +26,7 @@ public interface ModuleManager {
      * @throws InvalidModException
      * @throws AlreadyAddedVersionException
      */
-    public void loadModule(String path) throws IOException, ParseException, InvalidModException, AlreadyAddedVersionException;
+    public void loadModule(String path) throws IOException, ParseException, DependencyException, InvalidModException;
     
     /**
      * Display the list of the loaded modules
