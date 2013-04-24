@@ -29,7 +29,7 @@ public interface ModuleManager {
     public void loadModule(String path) throws IOException, ParseException, InvalidModException, AlreadyAddedVersionException;
     
     /**
-     * List loaded modules
+     * Display the list of the loaded modules
      */
     public void listModules();
     
