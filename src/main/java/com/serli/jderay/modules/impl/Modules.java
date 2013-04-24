@@ -74,6 +74,7 @@ public class Modules implements ModuleManager {
             return;
         }
         
+        Long t0 = System.currentTimeMillis();
         setDependencies();
         String[] args = {};
 
@@ -83,6 +84,7 @@ public class Modules implements ModuleManager {
         String mainClassName = mainModule.getMainClass();
         logger.debug("--------------------- Main class found in {} : {} ---------------------", mainModule, mainClassName);
         
+        logger.info("--------------------- Ready to run (loaded in {} ms) ---------------------", System.currentTimeMillis() - t0);
         logger.info("--------------------- Invoking main(String[] args) ---------------------");
         mainModule.invokeMain( mainClassName, args );
     }
