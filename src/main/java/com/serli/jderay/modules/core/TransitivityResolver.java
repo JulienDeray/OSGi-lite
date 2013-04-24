@@ -15,7 +15,7 @@ public class TransitivityResolver {
     private static Boolean[][] matrixAdj;
     private static Boolean[][] matrixRes;
     private static Map<String, Integer> nameToNum;
-    private static Map<Integer, String> numToName;
+    private static Map<Integer, String> numToName;    
     
     private static void displayMatrix( Boolean[][] matrix ) {
         System.out.println("------------------- MATRIX -------------------");
@@ -28,6 +28,11 @@ public class TransitivityResolver {
         System.out.println("----------------------------------------------");
     }
     
+    /**
+     * Resolve the dependences transitivities (if there are).
+     * @param list of loaded modules
+     * @return list of loaded modules with optimales dependencies
+     */
     public static Map<String, Module> resolve( Map<String, Module> listModules ) {
         init( listModules.values() );
         makeDependenciesMatrix( listModules.values(), nameToNum );
