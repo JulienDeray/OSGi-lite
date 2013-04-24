@@ -30,24 +30,20 @@ public class TransitivityResolver {
     
     public static Map<String, Module> resolve( Map<String, Module> listModules ) {
         init( listModules.values() );
-        
-        traceMatrix( listModules.values(), nameToNum );
-        displayMatrix( matrixAdj );
-        
+        makeDependenciesMatrix( listModules.values(), nameToNum );
         warshallAlgorithme( listModules.values() );
-        displayMatrix( matrixRes );
         
-        return makeOptimateMatrix( listModules );
+        return makeOptimaleMatrix( listModules );
     }
 
-    private static void traceMatrix(Collection<Module> dependencies, Map<String, Integer> table) {
+    private static void makeDependenciesMatrix(Collection<Module> dependencies, Map<String, Integer> table) {
         for ( Module mod : dependencies ) {
             int modNumber = table.get(mod.toString());
             matrixAdj[ modNumber ][ modNumber ] = true;
             for ( Module dep : mod.getDependencies().values() ) {
                 int depNumber = table.get(dep.toString());
                 matrixAdj[ depNumber ][ modNumber ] = true;
-                traceMatrix( mod.getDependencies().values(), table );
+                makeDependenciesMatrix( mod.getDependencies().values(), table );
             }
         }
     }
@@ -82,7 +78,7 @@ public class TransitivityResolver {
         }
     }
 
-    private static Map<String, Module> makeOptimateMatrix(Map<String, Module> listModules) {
+    private static Map<String, Module> makeOptimaleMatrix(Map<String, Module> listModules) {
         Map<String, Module> dependenciesRes = new HashMap<>();
         int n = listModules.size();
         
