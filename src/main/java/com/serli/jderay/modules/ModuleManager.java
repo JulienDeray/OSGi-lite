@@ -3,8 +3,10 @@ package com.serli.jderay.modules;
 import com.serli.jderay.modules.exceptions.AlreadyAddedVersionException;
 import com.serli.jderay.modules.exceptions.BadArgumentsException;
 import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
+import com.serli.jderay.modules.exceptions.DependencyException;
 import com.serli.jderay.modules.exceptions.DependencyNotFoundException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
+import com.serli.jderay.modules.exceptions.MainModuleException;
 import com.serli.jderay.modules.exceptions.MultipleMainModulesFoundedException;
 import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import java.io.IOException;
@@ -42,7 +44,7 @@ public interface ModuleManager {
      * @throws InvalidModException
      * @throws AlreadyAddedVersionException
      */
-    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, MultipleMainModulesFoundedException, IOException, ParseException, InvalidModException, AlreadyAddedVersionException, DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException;
+    public void loadModulesFromDirectory(String globalPath) throws DependencyException, IOException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, BadArgumentsException, ParseException;
 
     /**
      * Run the program. The method first look at dependences (check and resolve them), then search the main module and its main class. Finally, it launchs the main class.
@@ -52,7 +54,7 @@ public interface ModuleManager {
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
      */
-    public void run() throws DependencyNotFoundException, MultipleMainModulesFoundedException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException;
+    public void run() throws DependencyException, MainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException;
 
     /**
      * @return Main class if founded in the loaded modules. Else, return null.

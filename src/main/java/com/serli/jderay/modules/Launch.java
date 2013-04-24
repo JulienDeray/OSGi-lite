@@ -4,13 +4,10 @@
 
 package com.serli.jderay.modules;
 
-import com.serli.jderay.modules.exceptions.AlreadyAddedVersionException;
 import com.serli.jderay.modules.exceptions.BadArgumentsException;
-import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
-import com.serli.jderay.modules.exceptions.DependencyNotFoundException;
+import com.serli.jderay.modules.exceptions.DependencyException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
-import com.serli.jderay.modules.exceptions.MultipleMainModulesFoundedException;
-import com.serli.jderay.modules.exceptions.NoMainModuleException;
+import com.serli.jderay.modules.exceptions.MainModuleException;
 import com.serli.jderay.modules.impl.Modules;
 import java.io.File;
 import java.io.IOException;
@@ -22,35 +19,35 @@ import sun.misc.JarFilter;
 
 public class Launch {
 
-    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, DependencyNotFoundException, AlreadyAddedVersionException, NoMainModuleException, BadArgumentsException, CyclicDependencyDetectedException, MultipleMainModulesFoundedException {
+    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, BadArgumentsException, MainModuleException, DependencyException {
         String[] modulesPaths;
-        
-        if ( args[0].equals( "-mp" ) ) {
-            File folder = new File( args[1] );
-            if ( !folder.isDirectory() )
-                throw new BadArgumentsException(); 
-            int i = 0;
-            File[] modulesF = folder.listFiles(new JarFilter());
-            modulesPaths = new String[ modulesF.length ];
-            for( File pathModule : modulesF ) {
-                modulesPaths[i] = pathModule.getAbsolutePath().substring(0, pathModule.getAbsolutePath().length() - 4);
-                i++;
-            }
-        }
-        else if ( args[0].equals( "-m" ) ) {
-            modulesPaths = new String[ args.length - 1 ];
-            for (int i = 1; i < args.length; i++)
-                modulesPaths[i-1] = args[i];
-        }
-        else if ( args[0].equals( "-mprefix" ) ) {
-            if ( !args[2].equals( "-m" ) )
+        switch (args[0]) {
+            case "-mp":
+                File folder = new File( args[1] );
+                if ( !folder.isDirectory() )
+                    throw new BadArgumentsException();
+                int i = 0;
+                File[] modulesF = folder.listFiles(new JarFilter());
+                modulesPaths = new String[ modulesF.length ];
+                for( File pathModule : modulesF ) {
+                    modulesPaths[i] = pathModule.getAbsolutePath().substring(0, pathModule.getAbsolutePath().length() - 4);
+                    i++;
+                }
+                break;
+            case "-m":
+                modulesPaths = new String[ args.length - 1 ];
+                for (int j = 1; j < args.length; j++)
+                    modulesPaths[j-1] = args[j];
+                break;
+            case "-mprefix":
+                if ( !args[2].equals( "-m" ) )
+                    throw new BadArgumentsException();
+                modulesPaths = new String[ args.length - 3 ];
+                for (int k = 3; k < args.length; k++)
+                    modulesPaths[k-3] = args[1] + args[k];
+                break;
+            default:
                 throw new BadArgumentsException();
-            modulesPaths = new String[ args.length - 3 ];
-            for (int i = 3; i < args.length; i++)
-                modulesPaths[i-3] = args[1] + args[i];
-        } 
-        else {
-            throw new BadArgumentsException();
         }
         
         ModuleManager modules = new Modules(modulesPaths);

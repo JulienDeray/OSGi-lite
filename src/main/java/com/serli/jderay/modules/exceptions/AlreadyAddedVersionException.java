@@ -5,6 +5,6 @@
 package com.serli.jderay.modules.exceptions;
 
 
-public class AlreadyAddedVersionException extends Exception {
+public class AlreadyAddedVersionException extends DependencyException {
 
 }
