@@ -54,12 +54,12 @@ public interface ModuleManager {
     public void run() throws DependencyNotFoundException, NoMainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, CyclicDependencyDetectedException;
 
     /**
-     * Return the main class if founded in the loaded modules. Else, return null.
+     * @return Main class if founded in the loaded modules. Else, return null.
      */
     public Class getMainClass();
     
     /**
-     * Return a list of the loaded modules.
+     * @return List of the loaded modules.
      */
     public List<Module> getLoadedModules();
 }
