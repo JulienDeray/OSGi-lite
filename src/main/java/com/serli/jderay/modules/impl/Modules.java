@@ -57,7 +57,6 @@ public class Modules implements ModuleManager {
         }
         run();
     }
-    
 
     @Override
     public Class getMainClass() {
@@ -78,8 +77,9 @@ public class Modules implements ModuleManager {
         }
         
         Long t0 = System.currentTimeMillis();
-        setDependencies();
         String[] args = {};
+        
+        setDependencies();
 
         Module mainModule = findMainModule();
         logger.debug("--------------------- Main module found : {} ---------------------", mainModule);
@@ -96,7 +96,7 @@ public class Modules implements ModuleManager {
     public void loadModule(String path) throws IOException, ParseException, DependencyException, InvalidModException {
         URL url = new URL("jar:file:" + path + ".jar!/");
         Module mod = new Module( url );
-        addToMap(mod);
+        addToMap( mod );
     }
     
     @Override
@@ -118,8 +118,8 @@ public class Modules implements ModuleManager {
         Map<String, Module> modDependenciesNames = mod.getDependencies();
         
         for (String modCode : modDependenciesNames.keySet()) {
-            if (this.listModules.containsKey(modCode)) {
-                Module foundedDependency = this.listModules.get(modCode);
+            if ( this.listModules.containsKey(modCode) ) {
+                Module foundedDependency = this.listModules.get( modCode );
                 mod.addDependency( foundedDependency );
                 logger.debug("     * {}", modCode);
             } else {
@@ -132,7 +132,7 @@ public class Modules implements ModuleManager {
         logger.debug("--------------------- Checking cyclic dependencies ---------------------");
         for (Module mod : listModules.values()) {
             for (Module dep : mod.getDependencies().values() ) {
-                if (dep.getDependencies().containsKey(mod.toString()))
+                if ( dep.getDependencies().containsKey( mod.toString() ) )
                     throw new CyclicDependencyDetectedException("Direct Cyclic Dependency : " + mod + " <-> " + dep);
                 else
                     dep.checkClyclicDependency( mod );
@@ -140,10 +140,10 @@ public class Modules implements ModuleManager {
             logger.debug("{} -> OK", mod);
         }
     }
-
+ 
     private void setDependencies() throws DependencyException {
         logger.debug("--------------------- Loading dependences ---------------------");
-        for (Module mod : listModules.values()) {
+        for ( Module mod : listModules.values() ) {
             logger.debug(" -> {}", mod);
             if ( !mod.getDependencies().isEmpty() )
                 setDependenciesLocal( mod );
@@ -164,7 +164,7 @@ public class Modules implements ModuleManager {
         if (listModules.containsKey( formatKey(mod) ))
             throw new AlreadyAddedVersionException();
         else
-            listModules.put(formatKey(mod), mod);
+            listModules.put(formatKey( mod ), mod);
     }
 
     private Module findMainModule() throws MainModuleException {
@@ -172,7 +172,7 @@ public class Modules implements ModuleManager {
         
         for ( Module mod : listModules.values() ) {
             if ( mod.getMainClass() != null ) {
-                multiMain.add(mod);
+                multiMain.add( mod );
             }
         }
         
