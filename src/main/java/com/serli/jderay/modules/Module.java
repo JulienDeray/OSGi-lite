@@ -66,10 +66,10 @@ public class Module {
         Iterator<String> iterator = dependenciesJson.iterator();
         while (iterator.hasNext()) {
             String nameAndVersion = iterator.next();
-            String name = nameAndVersion.substring(0, nameAndVersion.indexOf(":"));
-            String version = nameAndVersion.substring(nameAndVersion.indexOf(":") + 1, nameAndVersion.length());
+            String modName = nameAndVersion.substring(0, nameAndVersion.indexOf(":"));
+            String modVersion = nameAndVersion.substring(nameAndVersion.indexOf(":") + 1, nameAndVersion.length());
 
-            this.dependencies.put(name + ":" + version, null);
+            this.dependencies.put(modName + ":" + modVersion, null);
         }
     }
 
