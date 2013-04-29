@@ -10,7 +10,7 @@ import com.serli.jderay.modules.exceptions.DependencyException;
 import com.serli.jderay.modules.exceptions.DependencyNotFoundException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
 import com.serli.jderay.modules.exceptions.MainModuleException;
-import com.serli.jderay.modules.exceptions.MultipleMainModulesFoundedException;
+import com.serli.jderay.modules.exceptions.MultipleMainModulesFoundException;
 import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import java.io.File;
 import java.io.IOException;
@@ -184,7 +184,7 @@ public class Modules implements ModuleManager {
             String exceptionMessage = "";
             for ( Module mod : multiMain )
                 exceptionMessage += mod.toString() + " ; ";
-            throw new MultipleMainModulesFoundedException( exceptionMessage );
+            throw new MultipleMainModulesFoundException( exceptionMessage );
         }
     }
 

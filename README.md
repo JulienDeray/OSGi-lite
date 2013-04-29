@@ -44,3 +44,42 @@ Using command lines :
 
 ### To specify the common path and choose modules to include :
 >java -jar ModuleManager-1.0-SNAPSHOT.jar -mprefix /path/to/modules -m module1 module2 module3
+
+
+
+Into the bundles :
+==================
+
+Let's imagine a class used as a service and its implementation :
+
+>NameService nameService = new NameServiceImpl();
+
+Publish services :
+------------------
+
+>Registration<NameService> serviceRegistration = Services.publish( NameService.class, nameService );
+
+To unregister, simply use :
+
+>serviceRegistration.unregister();
+
+Setup a listener :
+------------------
+
+>ListenerRegistration<NameService, NameServiceImpl> listenerReg = Services.listenTo( NameService.class ).with(new ServiceListener<NameService>() {
+
+>            public void registered(NameService service) {                           
+
+>                System.out.println( "\"" + service.toString() + "\" registred hombre !");
+
+>            }
+
+>           public void unregistered(NameService service) {
+
+>                System.out.println("Bye bye !! -> " + service.toString());
+
+>            }
+ 
+>       });
+
+
