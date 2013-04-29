@@ -19,6 +19,12 @@ public class Services {
     private static final Map<Class, List<?>> listServices = new HashMap<>();
     private static final Map<Class, ListenerRegistration<?, ?>> listListeners = new HashMap<>();
 
+    /*
+     * Publish a service. It then will be available from another module. 
+     * @param serviceClass Interface of the service.
+     * @param service Implementation of the service.
+     * @return Registration<TheService> : this object will allow to manage the registration (unpublish, etc ...).
+     */
     public static <T, K extends T> RegistrationImpl publish( Class<T> serviceClass, K service ) {
         if ( listServices.containsKey(serviceClass) ) {
             List<K> listK = (List<K>) listServices.get( serviceClass );
@@ -34,6 +40,10 @@ public class Services {
         return new RegistrationImpl( serviceClass );
     }
     
+    /*
+     * Add a listener to the specified service.
+     * @param serviceClass Interface of the service.
+     */
     public static <T, K extends T> ListenableService<T> listenTo( Class<T> serviceClass ) {
         return new ListenableService<>( serviceClass );
     }
@@ -55,6 +65,10 @@ public class Services {
         public ListenableService(Class<T> clazz) {
             this.clazz = clazz;
         }
+        
+        /*
+         * Implements the actions.
+         */
         public <K extends T> ListenerRegistration<T, K> with(ServiceListener<T> listener) {
              ListenerRegistration<T, K> reg = new ListenerRegistration<>(listener, clazz);
              Services.addListener(reg);
