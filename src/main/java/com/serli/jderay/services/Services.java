@@ -40,10 +40,10 @@ public class Services {
 
     private static void fire(ServicesEvent servicesEvent) {
         if ( servicesEvent instanceof RegistrationEvent ) {
-            listListeners.get( ((RegistrationEvent) servicesEvent).getServiceClass() ).getListener().registered( ((RegistrationEvent) servicesEvent).getService() );
+            listListeners.get( servicesEvent.getServiceClass() ).getListener().registered( servicesEvent.getService() );
         }
         else if ( servicesEvent instanceof UnregistrationEvent ) {
-            listListeners.get( ((UnregistrationEvent) servicesEvent).getServiceClass() ).getListener().unregistered( ( (UnregistrationEvent) servicesEvent ).getService() );
+            listListeners.get( servicesEvent.getServiceClass() ).getListener().unregistered( servicesEvent.getService() );
         }
     }
     
