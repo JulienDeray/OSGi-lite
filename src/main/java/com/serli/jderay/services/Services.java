@@ -80,6 +80,12 @@ public class Services {
         listListeners.put( listener.getServiceClass(), listener );
     }
 
+    /*
+     * Getter for registred services.
+     * @param serviceClass Interface of the service you want to get the implementation.
+     * @return The service implementation if one and only one is available.
+     * @throws MoreThanOneInstancePublishedException
+     */
     public static <T> T get(Class<T> serviceClass) throws MoreThanOneInstancePublishedException {
         List<?> services = listServices.get( serviceClass );
         if ( services.size() == 1 )
@@ -88,6 +94,11 @@ public class Services {
             throw new MoreThanOneInstancePublishedException();
     }
 
+    /*
+     * Getter for registred services.
+     * @param serviceClass Interface of the service you want to get the implementation.
+     * @return A iterable list of the implementation of the specified service.
+     */
     public static <T> Iterable<T> getAll(Class<T> serviceClass) {
         return (Iterable<T>) listServices.get( serviceClass );
     }
