@@ -39,11 +39,13 @@ public class Services {
     }
 
     private static void fire(ServicesEvent servicesEvent) {
-        if ( servicesEvent instanceof RegistrationEvent ) {
-            listListeners.get( servicesEvent.getServiceClass() ).getListener().registered( servicesEvent.getService() );
-        }
-        else if ( servicesEvent instanceof UnregistrationEvent ) {
-            listListeners.get( servicesEvent.getServiceClass() ).getListener().unregistered( servicesEvent.getService() );
+        if ( listListeners.containsKey( servicesEvent.getServiceClass() )) {
+            if ( servicesEvent instanceof RegistrationEvent ) {
+                listListeners.get( servicesEvent.getServiceClass() ).getListener().registered( servicesEvent.getService() );
+            }
+            else if ( servicesEvent instanceof UnregistrationEvent ) {
+                listListeners.get( servicesEvent.getServiceClass() ).getListener().unregistered( servicesEvent.getService() );
+            }
         }
     }
     
