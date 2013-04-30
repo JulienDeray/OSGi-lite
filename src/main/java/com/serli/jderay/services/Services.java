@@ -4,7 +4,6 @@
 
 package com.serli.jderay.services;
 
-import com.serli.jderay.modules.impl.Modules;
 import com.serli.jderay.services.events.RegistrationEvent;
 import com.serli.jderay.services.events.ServicesEvent;
 import com.serli.jderay.services.events.UnregistrationEvent;
@@ -44,7 +43,7 @@ public class Services {
         }
         
         listClasses.put( serviceClass.getName(), serviceClass);
-        System.out.println( listClasses );
+        logger.debug("--------------------- Publication : {} ---------------------", serviceClass.getName());
         fire( new RegistrationEvent(serviceClass, service) );
         return new RegistrationImpl( serviceClass );
     }
@@ -67,6 +66,7 @@ public class Services {
      * @param serviceClass Interface of the service.
      */
     public static <T, K extends T> ListenableService<T> listenTo( Class<T> serviceClass ) {
+        logger.debug("--------------------- Listener added to : {} ---------------------", serviceClass.getName());
         return new ListenableService<>( serviceClass );
     }
 
@@ -135,6 +135,7 @@ public class Services {
             fire( new UnregistrationEvent( classToUnregister, service ) );
         }
         listServices.remove( classToUnregister );
+        logger.debug("--------------------- Unregistration : {} ---------------------", classToUnregister.getName());
     }
 
 }
