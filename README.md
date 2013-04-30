@@ -47,7 +47,7 @@ Using command lines :
 
 
 
-Into the bundles :
+Services :
 ==================
 
 Let's imagine a class used as a service and its implementation :

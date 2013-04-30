@@ -8,6 +8,7 @@ import com.serli.jderay.services.events.RegistrationEvent;
 import com.serli.jderay.services.events.ServicesEvent;
 import com.serli.jderay.services.events.UnregistrationEvent;
 import com.serli.jderay.services.exceptions.MoreThanOneInstancePublishedException;
+import com.serli.jderay.services.exceptions.NotPublishedInstance;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ public class Services {
     
     private static final Map<Class, List<?>> listServices = new HashMap<>();
     private static final Map<Class, ListenerRegistration<?, ?>> listListeners = new HashMap<>();
+    private static final Map<String, Class> listClasses = new HashMap<>();
 
     /*
      * Publish a service. It then will be available from another module. 
@@ -36,8 +38,23 @@ public class Services {
             listServices.put(serviceClass, srv);
         }
         
+        listClasses.put( serviceClass.getName(), serviceClass);
+        System.out.println( listClasses );
         fire( new RegistrationEvent(serviceClass, service) );
         return new RegistrationImpl( serviceClass );
+    }
+    
+    /*
+     * Allow to get a class (which has been published) using the complete name.
+     * @param name Complete name of the class (ex : com.serli.jderay.services.Services)
+     * @return Class
+     */
+    public static Class getClass( String name ) {
+        return listClasses.get( name );
+    }
+    
+    public static boolean containsClass( String name ) {
+        return listClasses.containsKey(name);
     }
     
     /*
@@ -86,12 +103,16 @@ public class Services {
      * @return The service implementation if one and only one is available.
      * @throws MoreThanOneInstancePublishedException
      */
-    public static <T> T get(Class<T> serviceClass) throws MoreThanOneInstancePublishedException {
-        List<?> services = listServices.get( serviceClass );
-        if ( services.size() == 1 )
-            return (T) services.get(0);
+    public static <T> T get(Class<T> serviceClass) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
+        if ( listServices.containsKey( serviceClass ) ) {
+            List<?> services = listServices.get( serviceClass );
+            if ( services.size() == 1 )
+                return (T) services.get(0);
+            else
+                throw new MoreThanOneInstancePublishedException();
+        }
         else
-            throw new MoreThanOneInstancePublishedException();
+            throw new NotPublishedInstance( serviceClass.getName() );
     }
 
     /*
