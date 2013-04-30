@@ -4,6 +4,7 @@
 
 package com.serli.jderay.modules;
 
+import com.serli.jderay.modules.core.JarFilter;
 import com.serli.jderay.modules.exceptions.BadArgumentsException;
 import com.serli.jderay.modules.exceptions.DependencyException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
@@ -14,7 +15,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import org.json.simple.parser.ParseException;
-import sun.misc.JarFilter;
 
 
 public class Launch {

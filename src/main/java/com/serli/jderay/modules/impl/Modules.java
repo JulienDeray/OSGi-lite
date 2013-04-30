@@ -2,6 +2,7 @@ package com.serli.jderay.modules.impl;
 
 import com.serli.jderay.modules.Module;
 import com.serli.jderay.modules.ModuleManager;
+import com.serli.jderay.modules.core.JarFilter;
 import com.serli.jderay.modules.core.TransitivityResolver;
 import com.serli.jderay.modules.exceptions.AlreadyAddedVersionException;
 import com.serli.jderay.modules.exceptions.BadArgumentsException;
@@ -24,7 +25,6 @@ import java.util.Map;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.JarFilter;
 
 
 /**
