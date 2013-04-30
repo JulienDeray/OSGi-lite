@@ -4,6 +4,7 @@
 
 package com.serli.jderay.services;
 
+import com.serli.jderay.modules.impl.Modules;
 import com.serli.jderay.services.events.RegistrationEvent;
 import com.serli.jderay.services.events.ServicesEvent;
 import com.serli.jderay.services.events.UnregistrationEvent;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Services {
@@ -21,6 +24,8 @@ public class Services {
     private static final Map<Class, ListenerRegistration<?, ?>> listListeners = new HashMap<>();
     private static final Map<String, Class> listClasses = new HashMap<>();
 
+    private static final Logger logger = LoggerFactory.getLogger(Services.class);
+    
     /*
      * Publish a service. It then will be available from another module. 
      * @param serviceClass Interface of the service.
@@ -53,7 +58,7 @@ public class Services {
         return listClasses.get( name );
     }
     
-    public static boolean containsClass( String name ) {
+    public static boolean isPublished( String name ) {
         return listClasses.containsKey(name);
     }
     

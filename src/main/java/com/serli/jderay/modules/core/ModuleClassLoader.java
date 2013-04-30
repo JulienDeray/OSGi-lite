@@ -33,7 +33,7 @@ public class ModuleClassLoader extends URLClassLoader {
         if ( findLoadedClass( name ) != null )
             return findLoadedClass( name );
 
-        else if ( Services.containsClass( name ) ) {
+        else if ( Services.isPublished( name ) ) {
             return Services.getClass( name );
         }
             
