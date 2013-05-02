@@ -19,9 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class Services {
     
-    private static final Map<Class, List<?>> listServices = new HashMap<>();
     private static final Map<Class, ListenerRegistration<?, ?>> listListeners = new HashMap<>();
-    private static final Map<String, Class> listClasses = new HashMap<>();
 
     private static final Logger logger = LoggerFactory.getLogger(Services.class);
     
@@ -31,34 +29,29 @@ public class Services {
      * @param service Implementation of the service.
      * @return Registration<TheService> : this object will allow to manage the registration (unpublish, etc ...).
      */
-    public static <T, K extends T> RegistrationImpl publish( Class<T> serviceClass, K service ) {
-        if ( listServices.containsKey(serviceClass) ) {
-            List<K> listK = (List<K>) listServices.get( serviceClass );
+    public static <T, K extends T> RegistrationImpl publish( Class<T> serviceClass, K service ) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
+        if ( DIContainer.containsClass(serviceClass) ) {
+            List<K> listK = (List<K>) DIContainer.get( serviceClass );
             listK.add( service );
         }
         else {
             List<K> srv = new ArrayList<>();            
             srv.add( service );
-            listServices.put(serviceClass, srv);
+            DIContainer.put(serviceClass, srv);
         }
         
-        listClasses.put( serviceClass.getName(), serviceClass);
         logger.debug("--------------------- Publication : {} ---------------------", serviceClass.getName());
         fire( new RegistrationEvent(serviceClass, service) );
         return new RegistrationImpl( serviceClass );
     }
     
-    /*
-     * Allow to get a class (which has been published) using the complete name.
-     * @param name Complete name of the class (ex : com.serli.jderay.services.Services)
-     * @return Class
-     */
-    public static Class getClass( String name ) {
-        return listClasses.get( name );
-    }
-    
-    public static boolean isPublished( String name ) {
-        return listClasses.containsKey(name);
+    static <T, K extends T> void unregister(Class<T> classToUnregister) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
+        List<K> services = (List<K>) DIContainer.get( classToUnregister );
+        for ( K service : services ) {
+            fire( new UnregistrationEvent( classToUnregister, service ) );
+        }
+        DIContainer.remove( classToUnregister );
+        logger.debug("--------------------- Unregistration : {} ---------------------", classToUnregister.getName());
     }
     
     /*
@@ -80,6 +73,10 @@ public class Services {
             }
         }
     }
+
+    public static <T> T get(Class<T> clazz) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
+        return DIContainer.get( clazz );
+    }
     
     public static class ListenableService<T> {
         public final Class<T> clazz;
@@ -100,42 +97,6 @@ public class Services {
     
     static void addListener( ListenerRegistration<?, ?> listener ) {
         listListeners.put( listener.getServiceClass(), listener );
-    }
-
-    /*
-     * Getter for registred services.
-     * @param serviceClass Interface of the service you want to get the implementation.
-     * @return The service implementation if one and only one is available.
-     * @throws MoreThanOneInstancePublishedException
-     */
-    public static <T> T get(Class<T> serviceClass) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
-        if ( listServices.containsKey( serviceClass ) ) {
-            List<?> services = listServices.get( serviceClass );
-            if ( services.size() == 1 )
-                return (T) services.get(0);
-            else
-                throw new MoreThanOneInstancePublishedException();
-        }
-        else
-            throw new NotPublishedInstance( serviceClass.getName() );
-    }
-
-    /*
-     * Getter for registred services.
-     * @param serviceClass Interface of the service you want to get the implementation.
-     * @return A iterable list of the implementation of the specified service.
-     */
-    public static <T> Iterable<T> getAll(Class<T> serviceClass) {
-        return (Iterable<T>) listServices.get( serviceClass );
-    }
-    
-    static <T, K extends T> void unregister(Class<T> classToUnregister) {
-        List<K> services = (List<K>) listServices.get( classToUnregister );
-        for ( K service : services ) {
-            fire( new UnregistrationEvent( classToUnregister, service ) );
-        }
-        listServices.remove( classToUnregister );
-        logger.debug("--------------------- Unregistration : {} ---------------------", classToUnregister.getName());
     }
 
 }

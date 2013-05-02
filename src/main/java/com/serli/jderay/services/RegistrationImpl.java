@@ -4,6 +4,8 @@
 
 package com.serli.jderay.services;
 
+import com.serli.jderay.services.exceptions.PublicationException;
+
 
 public class RegistrationImpl implements Registration {
 
@@ -14,7 +16,7 @@ public class RegistrationImpl implements Registration {
     }
 
     @Override
-    public void unregister() {
+    public void unregister() throws PublicationException {
         Services.unregister(myClass);        
     }
 
