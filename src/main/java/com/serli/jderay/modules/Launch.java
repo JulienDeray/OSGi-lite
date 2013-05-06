@@ -14,12 +14,13 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import org.json.simple.parser.ParseException;
 
 
 public class Launch {
 
-    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, BadArgumentsException, MainModuleException, DependencyException {
+    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, BadArgumentsException, MainModuleException, DependencyException, URISyntaxException {
         String[] modulesPaths;
         switch (args[0]) {
             case "-mp":

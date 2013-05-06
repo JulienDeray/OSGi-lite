@@ -4,14 +4,17 @@
 
 package com.serli.jderay.services;
 
+import com.serli.jderay.jsr330.DIContainer;
 import com.serli.jderay.services.exceptions.MoreThanOneInstancePublishedException;
 import com.serli.jderay.services.exceptions.NotPublishedInstance;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-class DIContainer {
+/*
+ * Service Injection Container
+ */
+class SIContainer {
     
     private static final Map<Class, List<?>> listServices = new HashMap<>();
     
@@ -53,6 +56,5 @@ class DIContainer {
     static <T, K extends T> void put(Class<T> serviceClass, List<K> srv) {
         listServices.put(serviceClass, srv);
     }
-
 
 }

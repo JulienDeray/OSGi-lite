@@ -8,6 +8,15 @@
   <packaging>jar</packaging>
 
   <name>ModuleManager</name>
+  
+  <repositories>
+      <repository>
+        <id>reflections-repo</id>
+        <name>Reflections Maven2 Repository</name>
+        <url>http://reflections.googlecode.com/svn/repo</url>
+      </repository>
+  </repositories>
+    
   <url>https://github.com/cRiMi/OSGi-lite</url>
     <build>
         <plugins>
@@ -60,6 +69,11 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>1.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
+      <version>0.9.5</version>
     </dependency>
   </dependencies>
 </project>

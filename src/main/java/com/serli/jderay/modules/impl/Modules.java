@@ -1,7 +1,9 @@
 package com.serli.jderay.modules.impl;
 
+import com.serli.jderay.jsr330.DIContainer;
 import com.serli.jderay.modules.Module;
 import com.serli.jderay.modules.ModuleManager;
+import com.serli.jderay.modules.core.DIContainerVisitor;
 import com.serli.jderay.modules.core.JarFilter;
 import com.serli.jderay.modules.core.TransitivityResolver;
 import com.serli.jderay.modules.exceptions.AlreadyAddedVersionException;
@@ -16,7 +18,6 @@ import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 public class Modules implements ModuleManager {
 
-    
+    private DIContainer diContainer;
     private static final Logger logger = LoggerFactory.getLogger(Modules.class);
     
     private Map<String, Module> listModules;
@@ -42,14 +43,15 @@ public class Modules implements ModuleManager {
 
     public Modules() {
         this.listModules = new HashMap<>();    
+        diContainer = new DIContainer();
     }
     
-    public Modules(String ... modulesToLoad) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, MainModuleException, DependencyException {
-        this.listModules = new HashMap<>();
+    public Modules(String ... modulesToLoad) throws IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException {
+        this();
         loadAutomaticaly( modulesToLoad );
     }
     
-    private void loadAutomaticaly(String[] modulesToLoad) throws ParseException, InvalidModException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, MainModuleException, DependencyException, IOException {
+    private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException {
         logger.info("--------------------- Loading modules ---------------------");
         for (String module : modulesToLoad) {
             loadModule( module );
@@ -70,7 +72,7 @@ public class Modules implements ModuleManager {
     }
     
     @Override
-    public void run() throws DependencyException, MainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
+    public void run() throws DependencyException, MainModuleException, ClassNotFoundException, NoSuchMethodException {
         if ( listModules.isEmpty() ) {
             logger.error("Please load modules before run.");
             return;
@@ -87,20 +89,28 @@ public class Modules implements ModuleManager {
         String mainClassName = mainModule.getMainClass();
         logger.debug("--------------------- Main class found in {} : {} ---------------------", mainModule, mainClassName);
         
+        logger.info("--------------------- Resolve dependencies injections (JSR-330) ---------------------");
+        
         logger.info("--------------------- Ready to run (loaded in {} ms) ---------------------", System.currentTimeMillis() - t0);
         logger.info("--------------------- Invoking main(String[] args) ---------------------");
-        mainModule.invokeMain( mainClassName, args );
+        
+        try {
+            mainModule.invokeMain( mainClassName, args );
+        }
+        catch ( InvocationTargetException e ) {
+            
+        }
     }
     
     @Override
     public void loadModule(String path) throws IOException, ParseException, DependencyException, InvalidModException {
         URL url = new URL("jar:file:" + path + ".jar!/");
-        Module mod = new Module( url );
+        Module mod = new Module( url, new DIContainerVisitor( this ) );
         addToMap( mod );
     }
     
     @Override
-    public void loadModulesFromDirectory(String globalPath) throws DependencyException, IOException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, BadArgumentsException, ParseException {
+    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException {
         File folder = new File( globalPath );
         if ( !folder.isDirectory() )
             throw new BadArgumentsException(); 
@@ -200,6 +210,10 @@ public class Modules implements ModuleManager {
     @Override
     public List<Module> getLoadedModules() {
         return new ArrayList<>( listModules.values() );
+    }
+
+    public DIContainer getDiContainer() {
+        return diContainer;
     }
 
 }

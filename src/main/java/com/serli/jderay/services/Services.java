@@ -30,14 +30,14 @@ public class Services {
      * @return Registration<TheService> : this object will allow to manage the registration (unpublish, etc ...).
      */
     public static <T, K extends T> RegistrationImpl publish( Class<T> serviceClass, K service ) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
-        if ( DIContainer.containsClass(serviceClass) ) {
-            List<K> listK = (List<K>) DIContainer.get( serviceClass );
+        if ( SIContainer.containsClass(serviceClass) ) {
+            List<K> listK = (List<K>) SIContainer.get( serviceClass );
             listK.add( service );
         }
         else {
             List<K> srv = new ArrayList<>();            
             srv.add( service );
-            DIContainer.put(serviceClass, srv);
+            SIContainer.put(serviceClass, srv);
         }
         
         logger.debug("--------------------- Publication : {} ---------------------", serviceClass.getName());
@@ -46,11 +46,11 @@ public class Services {
     }
     
     static <T, K extends T> void unregister(Class<T> classToUnregister) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
-        List<K> services = (List<K>) DIContainer.get( classToUnregister );
+        List<K> services = (List<K>) SIContainer.get( classToUnregister );
         for ( K service : services ) {
             fire( new UnregistrationEvent( classToUnregister, service ) );
         }
-        DIContainer.remove( classToUnregister );
+        SIContainer.remove( classToUnregister );
         logger.debug("--------------------- Unregistration : {} ---------------------", classToUnregister.getName());
     }
     
@@ -75,9 +75,9 @@ public class Services {
     }
 
     public static <T> T get(Class<T> clazz) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
-        return DIContainer.get( clazz );
+        return SIContainer.get( clazz );
     }
-    
+
     public static class ListenableService<T> {
         public final Class<T> clazz;
 

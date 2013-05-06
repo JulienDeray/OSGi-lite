@@ -1,7 +1,6 @@
 package com.serli.jderay.modules.core;
 
 import com.serli.jderay.modules.Module;
-import com.serli.jderay.services.Services;
 import java.net.URL;
 import java.net.URLClassLoader;
 import org.slf4j.Logger;
@@ -29,13 +28,10 @@ public class ModuleClassLoader extends URLClassLoader {
     @Override
     public Class loadClass( String name ) throws ClassNotFoundException {
         logger.debug("{} : Loading class  {}", visitor.visitName(), name);
-        
+      
         if ( findLoadedClass( name ) != null )
             return findLoadedClass( name );
-
-        //else if ( Services.isPublished( name ) )
-        //    return Services.getClass( name );
-            
+    
         else if ( isJDKClass( name ) )
             return this.getClass().getClassLoader().loadClass( name );
 

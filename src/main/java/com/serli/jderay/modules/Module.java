@@ -1,6 +1,7 @@
 package com.serli.jderay.modules;
 
 
+import com.serli.jderay.modules.core.DIContainerVisitor;
 import com.serli.jderay.modules.core.ModuleVisitor;
 import com.serli.jderay.modules.core.ModuleClassLoader;
 import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
@@ -36,14 +37,24 @@ public class Module {
     private File jarFile;
     private File modFile;
     
+    private URL url;
+    
     private ModuleClassLoader classLoader;
+    
+    private DIContainerVisitor DIVisitor;
 
     public Module(URL url) throws IOException, ParseException, InvalidModException {
+        this.url = url;
         this.classLoader = new ModuleClassLoader( url, new ModuleVisitor( this ) );
         String modulePath = url.getPath().substring(5, url.getPath().length() - 6);
         this.dependencies = new HashMap<>();
         loadFiles(modulePath); 
         scanModFile();
+    }
+
+    public Module(URL url, DIContainerVisitor diContainerVisitor) throws IOException, ParseException, InvalidModException {
+        this( url );
+        DIVisitor = diContainerVisitor;
     }
 
     private void loadFiles(String modulePath) {
@@ -91,7 +102,8 @@ public class Module {
         }
         try {
             m.invoke(null, new Object[]{args});
-        } catch (IllegalAccessException e) {
+        } 
+        catch (IllegalAccessException e) {
         }
     }
 
@@ -136,6 +148,10 @@ public class Module {
         return version;
     }
 
+    public DIContainerVisitor getDIVisitor() {
+        return DIVisitor;
+    }
+
     public ModuleClassLoader getClassLoader() {
         return classLoader;
     }
@@ -143,7 +159,11 @@ public class Module {
     public void setDependencies(Map<String, Module> dependencies) {
         this.dependencies = dependencies;
     }
-    
+
+    public URL getUrl() {
+        return url;
+    }
+
     @Override
     public String toString() {
         return this.name + ":" + this.version;

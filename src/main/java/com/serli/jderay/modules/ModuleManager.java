@@ -8,6 +8,7 @@ import com.serli.jderay.modules.exceptions.MainModuleException;
 import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.List;
 import org.json.simple.parser.ParseException;
 
@@ -41,7 +42,7 @@ public interface ModuleManager {
      * @throws InvalidModException
      * @throws AlreadyAddedVersionException
      */
-    public void loadModulesFromDirectory(String globalPath) throws DependencyException, IOException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, BadArgumentsException, ParseException;
+    public void loadModulesFromDirectory(String globalPath) throws URISyntaxException, DependencyException, IOException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, BadArgumentsException, ParseException;
 
     /**
      * Run the program. The method first look at dependences (check and resolve them), then search the main module and its main class. Finally, it launchs the main class.
@@ -51,7 +52,7 @@ public interface ModuleManager {
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
      */
-    public void run() throws DependencyException, MainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException;
+    public void run() throws DependencyException, MainModuleException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IOException, URISyntaxException;
 
     /**
      * @return Main class if founded in the loaded modules. Else, return null.

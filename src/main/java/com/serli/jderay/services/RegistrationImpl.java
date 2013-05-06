@@ -10,7 +10,7 @@ import com.serli.jderay.services.exceptions.PublicationException;
 public class RegistrationImpl implements Registration {
 
     Class myClass;
-
+    
     public RegistrationImpl(Class serviceClass) {
         myClass = serviceClass;
     }
