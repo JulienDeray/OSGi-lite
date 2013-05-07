@@ -20,7 +20,7 @@ import org.json.simple.parser.ParseException;
 
 public class Launch {
 
-    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, BadArgumentsException, MainModuleException, DependencyException, URISyntaxException, IllegalAccessException {
+    public static void main(String[] args) throws MalformedURLException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, ParseException, InvalidModException, BadArgumentsException, MainModuleException, DependencyException, URISyntaxException, IllegalAccessException, InstantiationException {
         String[] modulesPaths;
         switch (args[0]) {
             case "-mp":
