@@ -6,7 +6,7 @@ package com.serli.jderay.services;
 
 import com.serli.jderay.jsr330.DIContainer;
 import com.serli.jderay.services.exceptions.MoreThanOneInstancePublishedException;
-import com.serli.jderay.services.exceptions.NotPublishedInstance;
+import com.serli.jderay.services.exceptions.NotPublishedInstanceException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ class SIContainer {
      * @return The service implementation if one and only one is available.
      * @throws MoreThanOneInstancePublishedException
      */
-    static <T> T get(Class<T> serviceClass) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
+    static <T> T get(Class<T> serviceClass) throws MoreThanOneInstancePublishedException, NotPublishedInstanceException {
         if ( listServices.containsKey( serviceClass ) ) {
             List<?> services = listServices.get( serviceClass );
             if ( services.size() == 1 )
@@ -33,7 +33,7 @@ class SIContainer {
                 throw new MoreThanOneInstancePublishedException();
         }
         else
-            throw new NotPublishedInstance( serviceClass.getName() );
+            throw new NotPublishedInstanceException( serviceClass.getName() );
     }
     
     /*

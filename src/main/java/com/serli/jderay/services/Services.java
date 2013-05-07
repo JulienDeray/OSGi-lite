@@ -8,7 +8,7 @@ import com.serli.jderay.services.events.RegistrationEvent;
 import com.serli.jderay.services.events.ServicesEvent;
 import com.serli.jderay.services.events.UnregistrationEvent;
 import com.serli.jderay.services.exceptions.MoreThanOneInstancePublishedException;
-import com.serli.jderay.services.exceptions.NotPublishedInstance;
+import com.serli.jderay.services.exceptions.NotPublishedInstanceException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,7 @@ public class Services {
      * @param service Implementation of the service.
      * @return Registration<TheService> : this object will allow to manage the registration (unpublish, etc ...).
      */
-    public static <T, K extends T> RegistrationImpl publish( Class<T> serviceClass, K service ) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
+    public static <T, K extends T> RegistrationImpl publish( Class<T> serviceClass, K service ) throws MoreThanOneInstancePublishedException, NotPublishedInstanceException {
         if ( SIContainer.containsClass(serviceClass) ) {
             List<K> listK = (List<K>) SIContainer.get( serviceClass );
             listK.add( service );
@@ -45,7 +45,7 @@ public class Services {
         return new RegistrationImpl( serviceClass );
     }
     
-    static <T, K extends T> void unregister(Class<T> classToUnregister) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
+    static <T, K extends T> void unregister(Class<T> classToUnregister) throws MoreThanOneInstancePublishedException, NotPublishedInstanceException {
         List<K> services = (List<K>) SIContainer.get( classToUnregister );
         for ( K service : services ) {
             fire( new UnregistrationEvent( classToUnregister, service ) );
@@ -74,7 +74,7 @@ public class Services {
         }
     }
 
-    public static <T> T get(Class<T> clazz) throws MoreThanOneInstancePublishedException, NotPublishedInstance {
+    public static <T> T get(Class<T> clazz) throws MoreThanOneInstancePublishedException, NotPublishedInstanceException {
         return SIContainer.get( clazz );
     }
 
