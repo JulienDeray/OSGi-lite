@@ -36,8 +36,6 @@ public class DIContainer {
         scanModules( listModules );
         inheritances = inheritanceAnalyser.analyse( classes );
         activated = true;
-        System.out.println(classes);
-        System.out.println(inheritances);
     }
 
     private void scanModules(Map<String, Module> listModules) throws MalformedURLException {
