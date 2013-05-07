@@ -21,10 +21,10 @@ public class DIContainer {
     
     private Map<String, Class<?>> classes;
     private Map<String, Class<?>[]> inheritances;
-    private boolean activated;
+    private boolean initialized;
     
     public DIContainer() {
-        activated =  false;
+        initialized =  false;
         classes = new HashMap<>();
         inheritances = new HashMap<>();
         
@@ -35,7 +35,7 @@ public class DIContainer {
     public void init(Map<String, Module> listModules) throws IOException, URISyntaxException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         scanModules( listModules );
         inheritances = inheritanceAnalyser.analyse( classes );
-        activated = true;
+        initialized = true;
     }
 
     private void scanModules(Map<String, Module> listModules) throws MalformedURLException {
