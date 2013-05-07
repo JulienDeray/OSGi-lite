@@ -7,6 +7,7 @@ import com.serli.jderay.modules.core.ModuleClassLoader;
 import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
 import com.serli.jderay.modules.exceptions.DependencyException;
 import com.serli.jderay.modules.exceptions.InvalidModException;
+import com.serli.jderay.modules.impl.Modules;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -92,7 +94,7 @@ public class Module {
             throw new InvalidModException();
     }
     
-    public void invokeMain(String name, String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
+    public void invokeMain(String name, String[] args) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Class c = classLoader.loadClass(name);
         Method m = c.getMethod("main", new Class[]{args.getClass()});
         m.setAccessible(true);
@@ -100,11 +102,7 @@ public class Module {
         if (m.getReturnType() != void.class || !Modifier.isStatic(mods) || !Modifier.isPublic(mods)) {
             throw new NoSuchMethodException("main");
         }
-        try {
-            m.invoke(null, new Object[]{args});
-        } 
-        catch (IllegalAccessException e) {
-        }
+        m.invoke(null, new Object[]{args});
     }
 
     public void checkClyclicDependency(Module mod) throws DependencyException {

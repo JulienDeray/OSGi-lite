@@ -18,11 +18,13 @@ import com.serli.jderay.modules.exceptions.NoMainModuleException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,12 +48,12 @@ public class Modules implements ModuleManager {
         diContainer = new DIContainer();
     }
     
-    public Modules(String ... modulesToLoad) throws IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException {
+    public Modules(String ... modulesToLoad) throws IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, URISyntaxException, InvocationTargetException {
         this();
         loadAutomaticaly( modulesToLoad );
     }
     
-    private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException {
+    private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, URISyntaxException, InvocationTargetException {
         logger.info("--------------------- Loading modules ---------------------");
         for (String module : modulesToLoad) {
             loadModule( module );
@@ -65,14 +67,14 @@ public class Modules implements ModuleManager {
         try {
             Module mainModule = findMainModule();
             return mainModule.getClassLoader().loadClass( mainModule.getMainClass() );
-        }
-        catch( MainModuleException | ClassNotFoundException e ) {
+        } catch (ClassNotFoundException | MainModuleException ex) {
+            java.util.logging.Logger.getLogger(Modules.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
     
     @Override
-    public void run() throws DependencyException, MainModuleException, ClassNotFoundException, NoSuchMethodException {
+    public void run() throws DependencyException, MainModuleException, ClassNotFoundException, NoSuchMethodException, IOException, URISyntaxException, InvocationTargetException {
         if ( listModules.isEmpty() ) {
             logger.error("Please load modules before run.");
             return;
@@ -90,16 +92,16 @@ public class Modules implements ModuleManager {
         logger.debug("--------------------- Main class found in {} : {} ---------------------", mainModule, mainClassName);
         
         logger.info("--------------------- Resolve dependencies injections (JSR-330) ---------------------");
+        try {
+            diContainer.init(listModules);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
+            java.util.logging.Logger.getLogger(Modules.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         logger.info("--------------------- Ready to run (loaded in {} ms) ---------------------", System.currentTimeMillis() - t0);
         logger.info("--------------------- Invoking main(String[] args) ---------------------");
-        
-        try {
-            mainModule.invokeMain( mainClassName, args );
-        }
-        catch ( InvocationTargetException e ) {
-            
-        }
+
+        mainModule.invokeMain( mainClassName, args );
     }
     
     @Override
@@ -110,7 +112,7 @@ public class Modules implements ModuleManager {
     }
     
     @Override
-    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException {
+    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, URISyntaxException, InvocationTargetException {
         File folder = new File( globalPath );
         if ( !folder.isDirectory() )
             throw new BadArgumentsException(); 
