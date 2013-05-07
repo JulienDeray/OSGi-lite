@@ -48,12 +48,12 @@ public class Modules implements ModuleManager {
         diContainer = new DIContainer();
     }
     
-    public Modules(String ... modulesToLoad) throws IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, URISyntaxException, InvocationTargetException {
+    public Modules(String ... modulesToLoad) throws IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, URISyntaxException, InvocationTargetException, IllegalAccessException {
         this();
         loadAutomaticaly( modulesToLoad );
     }
     
-    private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, URISyntaxException, InvocationTargetException {
+    private void loadAutomaticaly(String[] modulesToLoad) throws IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, URISyntaxException, InvocationTargetException, IllegalAccessException {
         logger.info("--------------------- Loading modules ---------------------");
         for (String module : modulesToLoad) {
             loadModule( module );
@@ -74,7 +74,7 @@ public class Modules implements ModuleManager {
     }
     
     @Override
-    public void run() throws DependencyException, MainModuleException, ClassNotFoundException, NoSuchMethodException, IOException, URISyntaxException, InvocationTargetException {
+    public void run() throws DependencyException, MainModuleException, ClassNotFoundException, IllegalAccessException, NoSuchMethodException, IOException, URISyntaxException, InvocationTargetException {
         if ( listModules.isEmpty() ) {
             logger.error("Please load modules before run.");
             return;
@@ -112,7 +112,7 @@ public class Modules implements ModuleManager {
     }
     
     @Override
-    public void loadModulesFromDirectory(String globalPath) throws BadArgumentsException, IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, URISyntaxException, InvocationTargetException {
+    public void loadModulesFromDirectory(String globalPath) throws IllegalAccessException, BadArgumentsException, IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, URISyntaxException, InvocationTargetException {
         File folder = new File( globalPath );
         if ( !folder.isDirectory() )
             throw new BadArgumentsException(); 
