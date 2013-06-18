@@ -13,6 +13,7 @@ Programmatically :
 
 ```java
 ModuleManager modules = new Modules("/path/to/module1", "/path/to/module2", ...);
+modules.run();
 ```
 
 or
