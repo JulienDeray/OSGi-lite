@@ -55,16 +55,22 @@ Services :
 
 Let's imagine a class used as a service and its implementation :
 
-`NameService nameService = new NameServiceImpl();`
+```java
+NameService nameService = new NameServiceImpl();
+```
 
 Publish services :
 ------------------
 
-`Registration<NameService> serviceRegistration = Services.publish( NameService.class, nameService );`
+```java
+Registration<NameService> serviceRegistration = Services.publish( NameService.class, nameService );
+```
 
 To unregister, simply use :
 
-`serviceRegistration.unregister();`
+```java
+serviceRegistration.unregister();
+```
 
 Setup a listener :
 ------------------
