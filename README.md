@@ -82,3 +82,11 @@ ListenerRegistration<NameService, NameServiceImpl> listenerReg = Services.listen
  
 });
 ```
+
+Get service :
+-------------
+
+```
+Services.get(NameService.class).methodeYouWant();
+```
+
