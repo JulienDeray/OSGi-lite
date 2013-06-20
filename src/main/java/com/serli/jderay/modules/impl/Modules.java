@@ -1,9 +1,7 @@
 package com.serli.jderay.modules.impl;
 
-import com.serli.jderay.jsr330.DIContainer;
 import com.serli.jderay.modules.Module;
 import com.serli.jderay.modules.ModuleManager;
-import com.serli.jderay.modules.core.DIContainerVisitor;
 import com.serli.jderay.modules.core.JarFilter;
 import com.serli.jderay.modules.core.TransitivityResolver;
 import com.serli.jderay.modules.exceptions.AlreadyAddedVersionException;
@@ -37,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 public class Modules implements ModuleManager {
 
-    private DIContainer diContainer;
     private static final Logger logger = LoggerFactory.getLogger(Modules.class);
     
     private Map<String, Module> listModules;
@@ -45,7 +42,6 @@ public class Modules implements ModuleManager {
 
     public Modules() {
         this.listModules = new HashMap<>();    
-        diContainer = new DIContainer();
     }
     
     public Modules(String ... modulesToLoad) throws IOException, ParseException, DependencyException, InvalidModException, MainModuleException, ClassNotFoundException, NoSuchMethodException, URISyntaxException, InvocationTargetException, IllegalAccessException, InstantiationException {
@@ -91,9 +87,6 @@ public class Modules implements ModuleManager {
         String mainClassName = mainModule.getMainClass();
         logger.debug("--------------------- Main class found in {} : {} ---------------------", mainModule, mainClassName);
         
-        logger.info("--------------------- Resolve dependencies injections (JSR-330) ---------------------");
-        diContainer.init(listModules);
-        
         logger.info("--------------------- Ready to run (loaded in {} ms) ---------------------", System.currentTimeMillis() - t0);
         logger.info("--------------------- Invoking main(String[] args) ---------------------");
 
@@ -103,7 +96,7 @@ public class Modules implements ModuleManager {
     @Override
     public void loadModule(String path) throws IOException, ParseException, DependencyException, InvalidModException {
         URL url = new URL("jar:file:" + path + ".jar!/");
-        Module mod = new Module( url, new DIContainerVisitor( this ) );
+        Module mod = new Module( url );
         addToMap( mod );
     }
     
@@ -208,10 +201,6 @@ public class Modules implements ModuleManager {
     @Override
     public List<Module> getLoadedModules() {
         return new ArrayList<>( listModules.values() );
-    }
-
-    public DIContainer getDiContainer() {
-        return diContainer;
     }
 
 }

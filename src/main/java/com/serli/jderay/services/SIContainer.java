@@ -4,7 +4,6 @@
 
 package com.serli.jderay.services;
 
-import com.serli.jderay.jsr330.DIContainer;
 import com.serli.jderay.services.exceptions.MoreThanOneInstancePublishedException;
 import com.serli.jderay.services.exceptions.NotPublishedInstanceException;
 import java.util.HashMap;

@@ -1,7 +1,5 @@
 package com.serli.jderay.modules;
 
-
-import com.serli.jderay.modules.core.DIContainerVisitor;
 import com.serli.jderay.modules.core.ModuleVisitor;
 import com.serli.jderay.modules.core.ModuleClassLoader;
 import com.serli.jderay.modules.exceptions.CyclicDependencyDetectedException;
@@ -40,8 +38,6 @@ public class Module {
     private URL url;
     
     private ModuleClassLoader classLoader;
-    
-    private DIContainerVisitor DIVisitor;
 
     public Module(URL url) throws IOException, ParseException, InvalidModException {
         this.url = url;
@@ -50,11 +46,6 @@ public class Module {
         this.dependencies = new HashMap<>();
         loadFiles(modulePath); 
         scanModFile();
-    }
-
-    public Module(URL url, DIContainerVisitor diContainerVisitor) throws IOException, ParseException, InvalidModException {
-        this( url );
-        DIVisitor = diContainerVisitor;
     }
 
     private void loadFiles(String modulePath) {
@@ -85,7 +76,6 @@ public class Module {
     }
 
     private String nullPrevent(String att) throws InvalidModException {
-        
         if (!"null".equals(att))
             return att;
         else
@@ -142,10 +132,6 @@ public class Module {
 
     public String getVersion() {
         return version;
-    }
-
-    public DIContainerVisitor getDIVisitor() {
-        return DIVisitor;
     }
 
     public ModuleClassLoader getClassLoader() {

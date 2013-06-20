@@ -23,10 +23,6 @@ public class ModuleVisitor {
     public String visitName() {
         return this.module.toString();
     }
-    
-    public DIContainerVisitor visitDIContainerVisitor() {
-        return this.module.getDIVisitor();
-    }
 
     public Module visitModule() {
         return this.module;
